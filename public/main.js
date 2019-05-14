@@ -12,9 +12,39 @@ let currentFilter
 let video_count=0;
 let client_number;
 let confirm_register = [];
+
+
+
+
+
+
+
 //get stream 
 navigator.mediaDevices.getUserMedia({ video: true, audio: true })
     .then(stream => {
+
+
+        let div = document.createElement('div')
+        let input = document.createElement('input')
+        input.type='text'
+        input.id = 'Chat'
+        input.placeholder='메세지를 입력하세요....'
+        let button = document.createElement('button')
+        button.addEventListener('click',Send_To_Peer_Chat);
+        button.innerText='전송'
+        
+        div.appendChild(input)
+        div.appendChild(button)
+        document.querySelector('body > div > div.Second_Bar').appendChild(div);
+
+
+
+
+
+
+
+
+
         socket.emit('NewClient')
         video.srcObject = stream
         video.play()
@@ -47,14 +77,27 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
             peer.on('data', function (data) {
                 let decodedData = new TextDecoder('utf-8').decode(data)
                 decodedData = JSON.parse(decodedData);
-                let peervideo;
-                console.log(decodedData.client_number,clients)
-                for(let i=0;i<clients.length;i++){
-                    if(clients[i].client_number==decodedData.client_number){
-                        peervideo = document.querySelector(`#peerVideo${clients[i].id} > video`)
-                        peervideo.style.filter = decodedData.currentFilter
+                console.log(decodedData)
+
+                if(decodedData.type == 'Chat'){
+                    let target_id;
+                    clients.forEach(function(client){
+                        if(client.client_number == decodedData.start){
+                             target_id = client.id;
+                        }
+                    })
+                    document.querySelector(`#peerVideo${target_id} > ul > li > span.co`).innerText = decodedData.value;
+                }else{
+                    let peervideo;
+                    //console.log(decodedData.client_number,clients)
+                    for(let i=0;i<clients.length;i++){
+                        if(clients[i].client_number==decodedData.client_number){
+                            peervideo = document.querySelector(`#peerVideo${clients[i].id} > video`)
+                            peervideo.style.filter = decodedData.currentFilter
+                        }
                     }
                 }
+               
                    
                 
             })
@@ -125,9 +168,6 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
                 }
             }
             confirm_register.push(target_id);
-
-            console.log(confirm_register)
-            console.log(clients)
             let div =document.createElement('div');
             div.className = `embed-responsive embed-responsive-16by9`
             document.querySelector('#peerVideo_list').appendChild(div);
@@ -137,7 +177,19 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
             video.className='embed-responsive-item';
             document.querySelector(`#peerVideo${target_id}`).appendChild(video);
             video.play()
-           
+
+
+            
+            let ul = document.createElement('ul');
+            let li = document.createElement('li');
+            let span_nm = document.createElement('span');
+            let span_co = document.createElement('span');
+            span_nm.className = `nm`;
+            span_co.className = 'co';
+            ul.className = `from_me`;
+            let target_video = document.querySelector(`#peerVideo${target_id}`).appendChild(ul).appendChild(li);
+            target_video.appendChild(span_nm);
+            target_video.appendChild(span_co)
         }
         function SendFilter(data) {
             data.client_number=client_number;
@@ -176,7 +228,7 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         function refresh(){
             
             document.querySelectorAll('.embed-responsive.embed-responsive-16by9').forEach(function(container){
-                let video = container.lastChild;
+                let video = container.firstChild;
                 console.log(video)
 
                 if(video.srcObject && video.srcObject.active==false){
@@ -188,6 +240,21 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         function get_clients(data){
             clients=data;
         }
+        function Send_To_Peer_Chat(){
+            let text = document.getElementById('Chat').value;
+            document.querySelector('body > div > div.Second_Bar > ul > li > span').innerText = text;
+             for(var i =0 ;i<peer_list.length; i++){
+                if(peer_list[i] && peer_list[i].readable){
+                    data={};
+                    console.log(document.getElementById('Chat').value)
+                    data.type='Chat';
+                    data.value =text;
+                    data.start= client_number;
+                    peer_list[i].send(JSON.stringify(data));
+                }
+             }
+        }
+        
         socket.on('SessionActive', SessionActive)
         socket.on('CreatePeer', MakePeer)
         socket.on('answer',receiveAnswer);
@@ -195,3 +262,6 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         socket.on('Get_Clients',get_clients);
     })
     .catch(err => document.write(err))
+
+
+   

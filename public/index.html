@@ -1,26 +1,144 @@
 <html>
 
 <head>
-    <title>Video Chat App</title>
+    <title>MyMentorMentee</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <style>
+<style>
         .select {
             height: 30px;
         }
-
         .h-90 {
             height: 90% !important;
         }
-
         .h-10 {
             height: 10% !important;
         }
-    </style>
+        .chat{
+            width: 100px;
+            padding: 10px 50px 10px 10px;
+            background-color:#a1c0d6;
+        }
+        .chat > ul{
+            position: relative;
+            width: 350px;
+            z-index: 0;
+        }
+        .chat > ul > li > span {
+            font-family:'Kakao';
+        }
+
+        ul.from_me {
+            block-size: 0ch;
+            padding:0px;
+        }
+        ul.from_me > li {
+            display: inline-block;
+            text-align: left;
+            position: relative;
+            background: rgb(113, 201, 171);
+            word-wrap: break-word;
+            max-width: 240px;
+            padding:10px;
+            margin-top: 50px;
+            margin-bottom: 250px;
+            border-radius: 10px;
+        }
+        ul.from_me > li:after {
+            content: '';
+            position: absolute;
+            height: 25px;
+            width: 25px;
+            border-radius: 12.5px;
+            z-index: -1;
+            background: #fdfeff;
+            bottom: -10px;
+            right: -13px;
+        }
+        ul.from_me > li:before {
+            content: '';
+            position: absolute;
+            height: 25px;
+            width: 25px;
+            border-radius: 12.5px;
+            z-index: -1;
+            background:rgb(113, 201, 171);
+            bottom: -6px;
+            right: -4px;
+        }
+
+        ul.from_me > li > span.nm {
+            position: absolute;
+            right:0px;
+            top:-20px;
+        }
+
+        ul.from_me > li > span.tm {
+            position: absolute;
+            font-size: 14px;
+            left:-55px;
+            bottom:0px;
+        }
+        ul.from_you > li {
+            display: inline-block;
+            position: relative;
+            block-size:0ch;
+            background: #FFFFFD;
+            
+            word-wrap: break-word;
+            max-width: 240px;
+            padding:10px;
+            margin-top: 10px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+        }
+        ul.from_you > li:after {
+            content: '';
+            position: absolute;
+            height: 25px;
+            width: 25px;
+            border-radius: 12.5px;
+            z-index: -1;
+            background: #a1c0d6;
+            bottom: -10px;
+            left: -13px;
+        }
+        ul.from_you > li:before {
+            content: '';
+            position: absolute;
+            height: 25px;
+            width: 25px;
+            border-radius: 12.5px;
+            z-index: -1;
+            background: #FFFFFD;
+            bottom: -6px;
+            left: -4px;
+        }
+        ul.from_you {
+            text-align: left;
+        }
+
+        ul.from_you > li > span.nm {
+            position: absolute;
+            left:0px;
+            top:-20px;
+        }
+
+        ul.from_you > li > span.tm {
+            position: absolute;
+            font-size: 14px;
+            right:-55px;
+            bottom:0px;
+        }
+</style>
 </head>
 
 <body>
+
+    
     <div class="container-fluid">
+            
+        
         <div class="row h-10 w-100">
             <select id="filter" class="w-50 bg-dark text-light ml-2 mt-2 select font-weight-bold border">
                 <option value="none">Normal</option>
@@ -33,19 +151,37 @@
                 <option value="saturate(25)">Super Saiyan God</option>
             </select>
         </div>
+
+
+        <div class="Second_Bar">
+
+                <ul class="from_me">
+                        <li>
+                         <span class="co"></span>
+                        </li>
+                      </ul>
+        </div>
+     
         <div class="row h-90 w-100">
+                       
             <div class="col-12 col-sm-6 d-flex justify-content-center">
                 <div class="embed-responsive embed-responsive-16by9">
                     <video class="embed-responsive-item" muted></video>
                 </div>
             </div>
-            <div class="col-12 col-sm-6 d-flex justify-content-center" id=peerVideo_list>
-            </div>
-        </div>
-    </div>
 
+            <div class="col-12 col-sm-6 d-flex justify-content-center" id=peerVideo_list></div>   
+
+        </div>
+    
+    
+    
+    </div>
+    
     <script src="/socket.io/socket.io.js"></script>
     <script src="bundle.js"></script>
 </body>
 
 </html>
+
+
