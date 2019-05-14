@@ -24645,6 +24645,7 @@ const filter = document.querySelector('#filter')
 let peer_list=[];
 let client = {};
 let clients=[];
+let pending_peer;
 var is_first=true;
 let currentFilter
 let video_count=0;
@@ -24701,14 +24702,6 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         }
         //for peer of type init
          function MakePeer(data,client_info) {
-               /* clients = data;
-                var cur_client = data.length-1;
-                client_number = client_info.client_number;
-                confirm_register.push(client_info.id);
-                socket.emit('log',client_info.client_number +"client has joined")
-                var dest_count=0;
-                var peer_cnt=0;
-                */
                clients = data;
                var cur_client = data.length-1;
                client_number = client_info.client_number;
@@ -24720,26 +24713,22 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
                             if (data.type == 'offer') {
                                 client.conf = {start:client_number, dest:undefined,}
                                 socket.emit('NewClientOffer',data,client.conf);
-                                //socket.emit('log',"offer emited");
                             }else if(data.type == 'answer'){
                                 socket.emit("Answer",data,client.conf)
-                                //socket.emit('log',"answer emited");
                             }
                         })   
-                            peer_list[client_number+1]=peer;
+                            pending_peer=peer;
                         }else if(cur_client == 1){
                             let peer = InitPeer()
                             peer.on('signal', function (data) {
                                 if (data.type == 'offer') {
-                                    client.conf = {start:client_number, dest:client_number-1,}
+                                    client.conf = {start:client_number, dest:clients[0].client_number,}
                                     socket.emit('NewClientOffer',data,client.conf);
-                                    //socket.emit('log',"offer emited");
                                 }else if(data.type == 'answer'){
                                     socket.emit("Answer",data,client.conf)
-                                    //socket.emit('log',"answer emited");
                                 }
                             })   
-                            peer_list[client_number-1]=peer;
+                            peer_list[clients[0].client_number]=peer;
                         }else{
                             clients.forEach(function(item){
                                 if(item.client_number != client_number){
@@ -24747,12 +24736,9 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
                                     peer.on('signal', function (data) {
                                         if (data.type == 'offer') {
                                             client.conf = {start:client_number, dest:clients[video_count++].client_number,}
-                                            console.log(client.conf);
                                             socket.emit('NewClientOffer',data,client.conf);
-                                            //socket.emit('log',"offer emited");
                                         }else if(data.type == 'answer'){
                                             socket.emit("Answer",data,client.conf)
-                                            //socket.emit('log',"answer emited");
                                         }
                                     })  
                                     peer_list[item.client_number]=peer;
@@ -24760,27 +24746,6 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
                             })
                             console.log(peer_list)
                         }
-                /*do{
-                    let peer = InitPeer(cur_client)
-                        if(cur_client == 0){
-                            peer_list[1]=peer;
-                        }else if(cur_client == 1){
-                            peer_list[0]=peer;
-                        }else{
-                            peer_list[peer_cnt]=peer;
-                        }
-                        peer_cnt++;
-                    peer.on('signal', function (data) {
-                        if (data.type == 'offer') {
-                            client.conf = {start:cur_client, dest:dest_count++,}
-                            socket.emit('NewClientOffer',data,client.conf);
-                            //socket.emit('log',"offer emited");
-                        }else if(data.type == 'answer'){
-                            socket.emit("Answer",data,client.conf)
-                            //socket.emit('log',"answer emited");
-                        }
-                    })     
-                }while(peer_cnt < data.length-1);*/
         }
         function CreateVideo(stream) {
            console.log(clients);
@@ -24824,22 +24789,23 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
             }
         }
         function receivedOffer(offer,conf){
-            if(conf.start>1){
+            if(clients.length>2){
                 let peer = InitPeer(0)
                 peer.on('signal', function (data) {
                   if(data.type == 'answer'){
                         socket.emit("Answer",data,client.conf)
-                        //socket.emit('log',"answer emited");
                     }
                 })  
                 peer_list[conf.start]= peer;
+            }else if(clients.length == 2){
+                peer_list[conf.start]=pending_peer;
             }
                 client.conf = conf;
                 peer_list[conf.start].signal(offer)
         }
         function receiveAnswer(answer,conf){
+            client.conf = conf;
             peer_list[conf.dest].signal(answer);
-            //socket.emit('Join',client.number);
         }
 
         function SessionActive() {
@@ -24857,23 +24823,6 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
                     container.hidden=true;
                 }
             })
-
-           /* document.querySelectorAll('.embed-responsive.embed-responsive-16by9').item(2).hidden=true
-
-            document.querySelectorAll('.embed-responsive.embed-responsive-16by9').forEach(function(video){
-                console.log(video)
-                if(video && video.srcObject.active==false){
-                    video.hidden=true;
-                }
-            })*/
-             /*for(var i =0 ;i<clients.length;i++){
-                 let container = document.querySelector(`#peerVideo${clients[i].id}`);
-                 let video = document.querySelector(`#peerVideo${clients[i].id} > video`);
-                 console.log(video)
-                if(video && video.srcObject.active==false){
-                    container.hidden=true;
-                }
-            }*/
         }
         function get_clients(data){
             clients=data;
