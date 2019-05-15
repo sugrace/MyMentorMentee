@@ -24675,15 +24675,6 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         div.appendChild(input)
         div.appendChild(button)
         document.querySelector('body > div > div.Second_Bar').appendChild(div);
-
-
-
-
-
-
-
-
-
         socket.emit('NewClient')
         video.srcObject = stream
         video.play()
