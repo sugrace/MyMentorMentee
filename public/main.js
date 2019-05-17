@@ -1,258 +1,178 @@
-let Peer = require('simple-peer')
-const _ = require('lodash');
-let socket = io()
-const video = document.querySelector('video')
-const filter = document.querySelector('#filter')
-let peer_list=[];
-let client = {};
-let clients=[];
-let pending_peer;
-var is_first=true;
-let currentFilter
-let video_count=0;
-let client_number;
-let confirm_register = [];
+let socket;
+let socketId;
+const localVideo = document.getElementById('localVideo');
+let connections = [];
+let inboundStream = null;
+let stream_cnt=0;
 
-
-
-
-
-
-
+var peerConnectionConfig = {
+    'iceServers': [
+        {'urls': 'stun:stun.services.mozilla.com'},
+        {'urls': 'stun:stun.l.google.com:19302'},
+    ]
+};
+let localStream;
 //get stream 
+
+let token;
+let call_token;
+if (document.location.hash === "" || document.location.hash === undefined) { 
+
+    // create the unique token for this call 
+    token =Math.round(Math.random()*10000);
+    call_token = "#"+token;
+
+    // set location.hash to the unique token for this call
+    document.location.hash = token;
+
+
+}else{
+    call_token = document.location.hash;
+}
+
+
+
+
+
+
+
 navigator.mediaDevices.getUserMedia({ video: true, audio: true })
     .then(stream => {
 
+       
 
-        let div = document.createElement('div')
-        let input = document.createElement('input')
-        input.type='text'
-        input.id = 'Chat'
-        input.placeholder='메세지를 입력하세요....'
-        let button = document.createElement('button')
-        button.addEventListener('click',Send_To_Peer_Chat);
-        button.innerText='전송'
         
-        div.appendChild(input)
-        div.appendChild(button)
-        document.querySelector('body > div > div.Second_Bar').appendChild(div);
-        socket.emit('NewClient')
-        video.srcObject = stream
-        video.play()
-        filter.addEventListener('change', (event) => {
-            currentFilter = event.target.value
-            video.style.filter = currentFilter
-            var data={};
-            data.currentFilter=currentFilter;
-            refresh();
-            SendFilter(data)
-            event.preventDefault
-        })
-        //used to initialize a peer
-        function InitPeer(init) {
-          
-            let peer = new Peer({ initiator: clients.length == 1 || init == 0 ? false : true, stream: stream, trickle: false })
-            peer.on('stream', function (stream) {
-                CreateVideo(stream)
-            })
-            peer.on('close', function () {
-                console.log("csafsdfsadfssdafsadfsdf")
-                for(var i =0;i<peer_list.length;i++){
-                    if(peer_list[i]!==undefined && peer_list[i]==peer){
-                        console.log(i)
-                        document.querySelector(`#peerVideo${i} > video`).remove();
-                        peer.destroy()
-                    }
-                }
-            })
-            peer.on('data', function (data) {
-                let decodedData = new TextDecoder('utf-8').decode(data)
-                decodedData = JSON.parse(decodedData);
-                console.log(decodedData)
-
-                if(decodedData.type == 'Chat'){
-                    let target_id;
-                    clients.forEach(function(client){
-                        if(client.client_number == decodedData.start){
-                             target_id = client.id;
-                        }
-                    })
-                    document.querySelector(`#peerVideo${target_id} > ul > li > span.co`).innerText = decodedData.value;
-                }else{
-                    let peervideo;
-                    //console.log(decodedData.client_number,clients)
-                    for(let i=0;i<clients.length;i++){
-                        if(clients[i].client_number==decodedData.client_number){
-                            peervideo = document.querySelector(`#peerVideo${clients[i].id} > video`)
-                            peervideo.style.filter = decodedData.currentFilter
-                        }
-                    }
-                }
-               
-                   
-                
-            })
-           
-            return peer
-        }
-        //for peer of type init
-         function MakePeer(data,client_info) {
-               clients = data;
-               var cur_client = data.length-1;
-               client_number = client_info.client_number;
-               confirm_register.push(client_info.id);
-               socket.emit('log',client_info.client_number +"client has joined")
-                        if(cur_client == 0){
-                           let peer = InitPeer()
-                           peer.on('signal', function (data) {
-                            if (data.type == 'offer') {
-                                client.conf = {start:client_number, dest:undefined,}
-                                socket.emit('NewClientOffer',data,client.conf);
-                            }else if(data.type == 'answer'){
-                                socket.emit("Answer",data,client.conf)
+        localVideo.srcObject = stream
+        localVideo.play();
+        socket = io()
+        socket.on('signal', gotMessageFromServer);
+        socket.on('connect', function(){
+            socket.emit('token_number',call_token);
+            socketId = socket.id;
+            socket.on('user-left', function(id){
+                var video = document.getElementById(`${id}`);
+                video.parentElement.remove();
+                // var parentDiv = video.parentElement;
+                // video.parentElement.parentElement.removeChild(parentDiv);
+            });
+            socket.on('user-joined', function(id, count, client_socket_ids){
+                console.log(id, count, client_socket_ids)
+                client_socket_ids.forEach(function(client_socket_id) {
+                    if(!connections[client_socket_id]){
+                        connections[client_socket_id] = new RTCPeerConnection(peerConnectionConfig);
+                          
+                        
+                        let channel = connections[client_socket_id].createDataChannel("chat")
+                        connections[client_socket_id].channel = channel
+                        channel.onopen = function(event) {
+                            channel.send('Hi you!');
+                          }
+                          channel.onmessage = function(event) {
+                            console.log(event.data);
+                          }
+                        
+                        //Wait for their ice candidate       
+                        connections[client_socket_id].onicecandidate = function(event){
+                            if(event.candidate != null) {
+                                console.log('SENDING ICE');
+                                socket.emit('signal', client_socket_id, JSON.stringify({'ice': event.candidate}));
                             }
-                        })   
-                            pending_peer=peer;
-                        }else if(cur_client == 1){
-                            let peer = InitPeer()
-                            peer.on('signal', function (data) {
-                                if (data.type == 'offer') {
-                                    client.conf = {start:client_number, dest:clients[0].client_number,}
-                                    socket.emit('NewClientOffer',data,client.conf);
-                                }else if(data.type == 'answer'){
-                                    socket.emit("Answer",data,client.conf)
-                                }
-                            })   
-                            peer_list[clients[0].client_number]=peer;
-                        }else{
-                            clients.forEach(function(item){
-                                if(item.client_number != client_number){
-                                    let peer = InitPeer()
-                                    peer.on('signal', function (data) {
-                                        if (data.type == 'offer') {
-                                            client.conf = {start:client_number, dest:clients[video_count++].client_number,}
-                                            socket.emit('NewClientOffer',data,client.conf);
-                                        }else if(data.type == 'answer'){
-                                            socket.emit("Answer",data,client.conf)
-                                        }
-                                    })  
-                                    peer_list[item.client_number]=peer;
-                                }
-                            })
-                            console.log(peer_list)
                         }
-        }
-        function CreateVideo(stream) {
-           console.log(clients);
-           let target_id;
-           for(let i =0;i<clients.length;i++){
-                target_id = clients[i].id;
-               for(let j=0;j<confirm_register.length;j++){
-                    if(target_id == confirm_register[j]){
-                        flag=false;
-                        break;
+                            
+                        //Wait for their video stream
+                        connections[client_socket_id].ontrack = function(event){
+                            gotRemoteStream(event, client_socket_id)
+                        }    
+                        //Add the local video stream
+                        stream.getTracks().forEach(function(track) {
+                            connections[client_socket_id].addTrack(track, stream);
+                          });
+                          
                     }
-                    flag = true;
+                });
+
+                //Create an offer to connect with your local description
+                
+                if(count >= 2){
+                    connections[id].createOffer().then(function(description){
+                        connections[id].setLocalDescription(description).then(function() {
+                            // console.log(connections);
+                            socket.emit('signal', id, JSON.stringify({'sdp': connections[id].localDescription}));
+                        }).catch(e => console.log(e));        
+                    });
                 }
-                if(flag==true){
-                    break;
-                }
-            }
-            confirm_register.push(target_id);
-            let div =document.createElement('div');
-            div.className = `embed-responsive embed-responsive-16by9`
-            document.querySelector('#peerVideo_list').appendChild(div);
-            div.id=`peerVideo${target_id}`;
-            let video = document.createElement('video')
-            video.srcObject = stream;
-            video.className='embed-responsive-item';
-            document.querySelector(`#peerVideo${target_id}`).appendChild(video);
-            video.play()
-
-
-            
-            let ul = document.createElement('ul');
-            let li = document.createElement('li');
-            let span_nm = document.createElement('span');
-            let span_co = document.createElement('span');
-            span_nm.className = `nm`;
-            span_co.className = 'co';
-            ul.className = `from_me`;
-            let target_video = document.querySelector(`#peerVideo${target_id}`).appendChild(ul).appendChild(li);
-            target_video.appendChild(span_nm);
-            target_video.appendChild(span_co)
-        }
-        function SendFilter(data) {
-            data.client_number=client_number;
-            if (peer_list.length>0) {
-                console.log(peer_list)
-                peer_list.forEach((peer)=>{
-                        if(peer.readable && peer){peer.send(JSON.stringify(data))}
-                        }
-                    )
-            }
-        }
-        function receivedOffer(offer,conf){
-            if(clients.length>2){
-                let peer = InitPeer(0)
-                peer.on('signal', function (data) {
-                  if(data.type == 'answer'){
-                        socket.emit("Answer",data,client.conf)
-                    }
-                })  
-                peer_list[conf.start]= peer;
-            }else if(clients.length == 2){
-                peer_list[conf.start]=pending_peer;
-            }
-                client.conf = conf;
-                peer_list[conf.start].signal(offer)
-        }
-        function receiveAnswer(answer,conf){
-            client.conf = conf;
-            peer_list[conf.dest].signal(answer);
-        }
-
-        function SessionActive() {
-            document.write('Session Active. Please come back later')
-        }
-
-        function refresh(){
-            
-            document.querySelectorAll('.embed-responsive.embed-responsive-16by9').forEach(function(container){
-                let video = container.firstChild;
-                console.log(video)
-
-                if(video.srcObject && video.srcObject.active==false){
-                    video.hidden=true;
-                    container.hidden=true;
-                }
-            })
-        }
-        function get_clients(data){
-            clients=data;
-        }
-        function Send_To_Peer_Chat(){
-            let text = document.getElementById('Chat').value;
-            document.querySelector('body > div > div.Second_Bar > ul > li > span').innerText = text;
-             for(var i =0 ;i<peer_list.length; i++){
-                if(peer_list[i] && peer_list[i].readable){
-                    data={};
-                    console.log(document.getElementById('Chat').value)
-                    data.type='Chat';
-                    data.value =text;
-                    data.start= client_number;
-                    peer_list[i].send(JSON.stringify(data));
-                }
-             }
-        }
-        
-        socket.on('SessionActive', SessionActive)
-        socket.on('CreatePeer', MakePeer)
-        socket.on('answer',receiveAnswer);
-        socket.on('offer',receivedOffer);
-        socket.on('Get_Clients',get_clients);
+            });          
+        })    
     })
     .catch(err => document.write(err))
 
+function gotMessageFromServer(fromId, message) {
+
+        //Parse the incoming signal
+        var signal = JSON.parse(message)
+    
+        //Make sure it's not coming from yourself
+        if(fromId != socketId) {
+    
+            if(signal.sdp){            
+                connections[fromId].setRemoteDescription(new RTCSessionDescription(signal.sdp)).then(function() {                
+                    if(signal.sdp.type == 'offer') {
+                        connections[fromId].createAnswer().then(function(description){
+                            connections[fromId].setLocalDescription(description).then(function() {
+                                socket.emit('signal', fromId, JSON.stringify({'sdp': connections[fromId].localDescription}));
+                            }).catch(e => console.log(e));        
+                        }).catch(e => console.log(e));
+                    }else if(signal.sdp.type == 'answer'){
+                        connections[fromId].ondatachannel = function(event) {
+                            let channel = event.channel;
+                            connections[fromId].channel = channel
+                            
+                              channel.onopen = function(event) {
+                              channel.send('Hi back!');
+                            }
+                            channel.onmessage = function(event) {
+                              console.log(event.data);
+                            }
+                            console.log(connections)
+                        }
+                      
+                    }
+                }).catch(e => console.log(e));
+            }
+        
+            if(signal.ice) {
+                connections[fromId].addIceCandidate(new RTCIceCandidate(signal.ice)).catch(e => console.log(e));
+            }                
+        }
+}
+var video = document.createElement('video')
+function gotRemoteStream(event, id) {
+    if(stream_cnt==0){
+        video  = document.createElement('video'),
+    video.setAttribute('id', id);
+    div    = document.createElement('div')
+    div.className = `embed-responsive embed-responsive-16by9`
+    inboundStream = new MediaStream();
+    video.srcObject = inboundStream;
+    video.className='embed-responsive-item';
+    //video.muted       = true;
+    //video.playsinline = true;
+    
+    div.appendChild(video);      
+    document.getElementById('peerVideo_list').appendChild(div);     
+    video.autoplay    = true;  
+    }
+   
 
    
+        if (stream_cnt<2) {
+     
+        inboundStream.addTrack(event.track);
+        }
+        
+        stream_cnt++;
+    
+        if(stream_cnt == 2){
+        stream_cnt=0;
+    }
+}
