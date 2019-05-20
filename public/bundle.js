@@ -3,6 +3,7 @@ let socket;
 let socketId;
 const localVideo = document.getElementById('localVideo');
 const filter = document.querySelector('#filter')
+const chat_button = document.getElementById('chat_button')
 let connections = [];
 let inboundStream = null;
 let stream_cnt=0;
@@ -54,13 +55,41 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
             localVideo.style.filter = currentFilter
             var data={};
             data.currentFilter=currentFilter;
-            data.id = socketId;
-            SendFilter(data)
+            data.id = socketId
+            data.type = 'filter'
+            SendData(data)
             event.preventDefault
         })
         
         
-        
+        chat_button.addEventListener('click',event=>{
+            let data = {}
+            let text = document.getElementById('chat').value;
+            let nm = document.createElement('span')
+            nm.className='nm'
+            nm.innerText = 'me'
+            let co = document.createElement('span')
+            co.className='co'
+            co.innerText = text;
+            let tm = document.createElement('span')
+            tm.className='tm'
+            let chat = document.querySelector('body > div.chat');
+            let ul = document.createElement('ul')
+            ul.className='from_me'
+            let li = document.createElement('li')
+            let br = document.createElement('br')
+            ul.appendChild(li)
+            li.appendChild(nm)
+            li.appendChild(co)
+            li.appendChild(tm)
+            chat.appendChild(ul)
+            chat.appendChild(br)
+            data.type = 'chat'
+            data.text=text;
+
+            SendData(data)
+
+        });
         
         
         
@@ -126,7 +155,33 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
                                 channel.onmessage = function(event) {
                                     var data = JSON.parse(event.data)
                                     console.log(data)
-                                    document.getElementById(`${data.id}`).style.filter = data.currentFilter;
+                                    if(data.type == 'filter'){
+                                        document.getElementById(`${data.id}`).style.filter = data.currentFilter;
+                                    }
+                                    else if(data.type =='chat'){
+                                        let text = data.text
+                                        let nm = document.createElement('span')
+                                        nm.className='nm'
+                                        nm.innerText = 'others'
+                                        let co = document.createElement('span')
+                                        co.className='co'
+                                        co.innerText = text;
+                                        let tm = document.createElement('span')
+                                        tm.className='tm'
+                                        let chat = document.querySelector('body > div.chat');
+                                        let ul = document.createElement('ul')
+                                        ul.className='from_others'
+                                        let li = document.createElement('li')
+                                        let br = document.createElement('br')
+                                        ul.appendChild(li)
+                                        li.appendChild(nm)
+                                        li.appendChild(co)
+                                        li.appendChild(tm)
+                                        chat.appendChild(ul)
+                                        chat.appendChild(br)
+
+                                    }
+                                   
                                 }
                                 
                             }
@@ -231,7 +286,7 @@ function gotRemoteStream(event, id) {
         stream_cnt=0;
     }
 }
-function SendFilter(data) {
+function SendData(data) {
     console.log(connections)
  let connection_ids = Object.keys(connections)
     if (connection_ids.length>0) {
