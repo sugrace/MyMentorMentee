@@ -1,9 +1,11 @@
 let socket;
 let socketId;
 const localVideo = document.getElementById('localVideo');
+const filter = document.querySelector('#filter')
 let connections = [];
 let inboundStream = null;
 let stream_cnt=0;
+let video;
 
 var peerConnectionConfig = {
     'iceServers': [
@@ -44,7 +46,37 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         
         localVideo.srcObject = stream
         localVideo.play();
+        
+        
+        filter.addEventListener('change', (event) => {
+            currentFilter = event.target.value
+            localVideo.style.filter = currentFilter
+            var data={};
+            data.currentFilter=currentFilter;
+            data.id = socketId;
+            SendFilter(data)
+            event.preventDefault
+        })
+        
+        
+        
+        
+        
+        
+        
+        
         socket = io()
+
+
+
+
+
+
+
+
+
+
+
         socket.on('signal', gotMessageFromServer);
         socket.on('connect', function(){
             socket.emit('token_number',call_token);
@@ -60,24 +92,43 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
                 client_socket_ids.forEach(function(client_socket_id) {
                     if(!connections[client_socket_id]){
                         connections[client_socket_id] = new RTCPeerConnection(peerConnectionConfig);
-                          
-                        
-                        let channel = connections[client_socket_id].createDataChannel("chat")
-                        connections[client_socket_id].channel = channel
-                        channel.onopen = function(event) {
-                            channel.send('Hi you!');
-                          }
-                          channel.onmessage = function(event) {
-                            console.log(event.data);
-                          }
-                        
-                        //Wait for their ice candidate       
-                        connections[client_socket_id].onicecandidate = function(event){
-                            if(event.candidate != null) {
-                                console.log('SENDING ICE');
-                                socket.emit('signal', client_socket_id, JSON.stringify({'ice': event.candidate}));
+                        //if(client_socket_ids.indexOf(client_socket_id)<client_socket_ids.indexOf(client_))
+                            let channel = connections[client_socket_id].createDataChannel(`chat${client_socket_id}`)
+                            connections[client_socket_id].channel = channel
+                            channel.onopen = function(event) {
+                                console.log(`it is create peer`)
+                                //channel.send('it is create peer');
+                              }
+                              /*channel.onmessage = function(event) {
+                                var data = JSON.parse(event.data)
+                                console.log(data)
+                                document.getElementById(`${data.id}`).style.filter = data.currentFilter;
+                                //if(connections[data.id])
+                                }*/
+                            
+                            //Wait for their ice candidate       
+                            connections[client_socket_id].onicecandidate = function(event){
+                                if(event.candidate != null) {
+                                    console.log('SENDING ICE');
+                                    socket.emit('signal', client_socket_id, JSON.stringify({'ice': event.candidate}));
+                                }
                             }
-                        }
+                        
+                            connections[client_socket_id].ondatachannel = function(event) {
+                                let channel = event.channel;
+                                //connections[client_socket_id].channel = channel
+                                
+                                  channel.onopen = function(event) {
+                                      console.log('it is receive peer')
+                                  //channel.send('it is receive peer');
+                                }
+                                channel.onmessage = function(event) {
+                                    var data = JSON.parse(event.data)
+                                    console.log(data)
+                                    document.getElementById(`${data.id}`).style.filter = data.currentFilter;
+                                }
+                                
+                            }
                             
                         //Wait for their video stream
                         connections[client_socket_id].ontrack = function(event){
@@ -123,18 +174,21 @@ function gotMessageFromServer(fromId, message) {
                             }).catch(e => console.log(e));        
                         }).catch(e => console.log(e));
                     }else if(signal.sdp.type == 'answer'){
-                        connections[fromId].ondatachannel = function(event) {
+                       /* connections[fromId].ondatachannel = function(event) {
                             let channel = event.channel;
                             connections[fromId].channel = channel
                             
                               channel.onopen = function(event) {
-                              channel.send('Hi back!');
+                                  console.log('it is receive peer')
+                              //channel.send('it is receive peer');
                             }
                             channel.onmessage = function(event) {
-                              console.log(event.data);
+                                var data = JSON.parse(event.data)
+                                console.log(data)
+                                document.getElementById(`${data.id}`).style.filter = data.currentFilter;
                             }
-                            console.log(connections)
-                        }
+                            
+                        }*/
                       
                     }
                 }).catch(e => console.log(e));
@@ -145,8 +199,8 @@ function gotMessageFromServer(fromId, message) {
             }                
         }
 }
-var video = document.createElement('video')
 function gotRemoteStream(event, id) {
+
     if(stream_cnt==0){
         video  = document.createElement('video'),
     video.setAttribute('id', id);
@@ -174,5 +228,18 @@ function gotRemoteStream(event, id) {
     
         if(stream_cnt == 2){
         stream_cnt=0;
+    }
+}
+function SendFilter(data) {
+    console.log(connections)
+ let connection_ids = Object.keys(connections)
+    if (connection_ids.length>0) {
+        connection_ids.forEach(function(connection_id){
+            if(connection_id!=socketId){
+    console.log(connections[connection_id])
+
+            connections[connection_id].channel.send(JSON.stringify(data))
+            }
+        })
     }
 }
