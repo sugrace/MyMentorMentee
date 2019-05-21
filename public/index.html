@@ -1,201 +1,213 @@
+<!DOCTYPE HTML>
+
 <html>
+	<head>
+		<title>My Mentor Mentee | Konkuk Univ.</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload landing">
+		<div id="page-wrapper">
 
-<head>
-    <title>MyMentorMentee</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" crossorigin="anonymous" href="https://meta-kage.kakaocdn.net/dn/osa/blog/assets/fonts/Kakao.css"/> 
-        <style>
-            .chat{
-                width: 380px;
-                padding: 10px 50px 10px 10px;
-                background-color:#a1c0d6;
-            }
-            .chat > ul{
-                position: relative;
-                width: 350px;
-                z-index: 0;
-            }
-            .chat > ul > li > span {
-                font-family:'Kakao';
-            }
+			<!-- Header -->
+				<header id="header">
+					<h1 id="logo"><a href="index.html">My Mentor Mentee</a></h1>
+					<nav id="nav">
+						<ul>
+							<li><a href="index.html">Home</a></li>
+							<li>
+								<a href="#">Mentoring</a>
+								<ul>
+									<li><a href="section_subject.html">Section & Subject</a></li>
+									<li><a href="mentor.html">Mentor</a></li>
+									<li><a href="apply.html">Apply</a></li>
+									<li><a href="Room.html">Room</a></li>
+								</ul>
+							</li>
+							<li>
+								<a href="#">Group Study</a>
+								<ul>
+									<li><a href="#">College lecture study</a></li>
+									<li><a href="#">Language skill study</a></li>
+									<li><a href="#">Algorithm study</a></li>
+									<li><a href="#">Employment study</a></li>
+								</ul>
+							</li>
+							<li><a href="boards.html">Boards</a></li>
+							<li><a href="mypage.html">My Page</a></li>
+							
+							<li><a href="#" class="button primary">Sign Up</a></li>
+							<li><a href="#" class="button primary">Log In</a></li>
+						</ul>
+					</nav>
+				</header>
 
-            ul.from_me {
-                text-align: right;
-            }
-            ul.from_me > li {
-                display: inline-block;
-                text-align: left;
-                position: relative;
-                background: #FCCE00;
-                word-wrap: break-word;
-                max-width: 240px;
-                padding:10px;
-                margin-top: 10px;
-                margin-bottom: 30px;
-                border-radius: 10px;
-            }
-            ul.from_me > li:after {
-                content: '';
-                position: absolute;
-                height: 25px;
-                width: 25px;
-                border-radius: 12.5px;
-                z-index: -1;
-                background: #a1c0d6;
-                bottom: -10px;
-                right: -13px;
-            }
-            ul.from_me > li:before {
-                content: '';
-                position: absolute;
-                height: 25px;
-                width: 25px;
-                border-radius: 12.5px;
-                z-index: -1;
-                background: #FCCE00;
-                bottom: -6px;
-                right: -4px;
-            }
+			<!-- Banner -->
+				<section id="banner">
+					<div class="content">
+						<header>
+							<h2>Sharing your knowledge for everyone</h2>
+							<p>You can be a mentor, and also mentee.<br />
+							  Team project meetings are no problem anywhere with your laptop.</p>
+						</header>
+		
+					</div>
+					<a href="#one" class="goto-next scrolly">Next</a>
+				</section>
 
-            ul.from_me > li > span.nm {
-                position: absolute;
-                right:0px;
-                top:-20px;
-            }
+			<!-- One -->
+				<section id="one" class="spotlight style1 bottom">
+					<span class="image fit main"><img src="images/pic02.jpg" alt="" /></span>
+					<div class="content">
+						<div class="container">
+							<div class="row">
+								<div class="col-4 col-12-medium">
+									<header>
+										<h2>Find your study mates!!</h2>
+										<p>Search for interests and find relevant mentoring and studies.</p>
+									</header>
+								</div>
+								<div class="col-4 col-12-medium">
+									<p>Create Room</p>
+										<div class="row gtr-uniform gtr-50">
+										<div class="col-4 col-12-xsmall"><input type="button" value="Create" class="fit primary" onclick= "document.location.assign('/Room.html')"/></div>
+										</div>
+								</div>
+								<div class="col-4 col-12-medium">
+									<p>Join Room</p>
+										<div class="row gtr-uniform gtr-50">
+                                            <div class="col-8 col-12-xsmall"><input type="text" name="study" id="study" placeholder="What you want to study with" /></div>
+                                        <div class="col-4 col-12-xsmall"><input type="button" value="Join" class="fit primary" onclick= "document.location.assign(`/Room.html#${document.getElementById('study').value}`)"/></div>
+                                      
+										</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<a href="#two" class="goto-next scrolly">Next</a>
+				</section>
 
-            ul.from_me > li > span.tm {
-                position: absolute;
-                font-size: 14px;
-                left:-55px;
-                bottom:0px;
-            }
-            ul.from_others > li {
-                display: inline-block;
-                position: relative;
-                
-                background: #FFFFFD;
-                
-                word-wrap: break-word;
-                max-width: 240px;
-                padding:10px;
-                margin-top: 10px;
-                margin-bottom: 30px;
-                border-radius: 10px;
-            }
-            ul.from_others > li:after {
-                content: '';
-                position: absolute;
-                height: 25px;
-                width: 25px;
-                border-radius: 12.5px;
-                z-index: -1;
-                background: #a1c0d6;
-                bottom: -10px;
-                left: -13px;
-            }
-            ul.from_others > li:before {
-                content: '';
-                position: absolute;
-                height: 25px;
-                width: 25px;
-                border-radius: 12.5px;
-                z-index: -1;
-                background: #FFFFFD;
-                bottom: -6px;
-                left: -4px;
-            }
-            ul.from_others {
-                text-align: left;
-            }
+			<!-- Two -->
+				<section id="two" class="spotlight style2 right">
+					<span class="image fit main"><img src="images/pic03.jpg" alt="" /></span>
+					<div class="content">
+						<header>
+							<h2>Monthly Best Mentor</h2>
+							<p>
+							This is a statistical result based on mentees' evaluation of the course.</p>
+						</header>
+						<p>
+						This month, 'Kim Ki-cheon' mentor in the field of network communication was selected as the best mentor. 
+						The mentor said, "It is a great honor to be the mentor of this month that students have chosen." 
+						Mentor's lecture list can be confirmed by clicking the button below.</p>
+						<ul class="actions">
+							<li><a href="#" class="button">See More</a></li>
+						</ul>
+					</div>
+					<a href="#three" class="goto-next scrolly">Next</a>
+				</section>
 
-            ul.from_others > li > span.nm {
-                position: absolute;
-                left:0px;
-                top:-20px;
-            }
+			<!-- Three -->
+				<section id="three" class="spotlight style3 left">
+					<span class="image fit main bottom"><img src="images/pic04.jpg" alt="" /></span>
+					<div class="content">
+						<header>
+							<h2>Employment NEWS</h2>
+							<p>
+							Check out the latest updated employment news. </p>
+						</header>
+						<p>yeogidaga mojip company gonggo link gulgi OR chi up cafe list </p>
+						<ul class="actions">
+							<li><a href="#" class="button">See More</a></li>
+						</ul>
+					</div>
+					<a href="#four" class="goto-next scrolly">Next</a>
+				</section>
 
-            ul.from_others > li > span.tm {
-                position: absolute;
-                font-size: 14px;
-                right:-55px;
-                bottom:0px;
-            }
+			<!-- Four -->
+				<section id="four" class="wrapper style1 special fade-up">
+					<div class="container">
+						<header class="major">
+							<h2>What features are there?</h2>
+							<p>
+							What are some of the features you can experience in 'My Mentor Mentee'?</p>
+						</header>
+						<div class="box alt">
+							<div class="row gtr-uniform">
+								<section class="col-4 col-6-medium col-12-xsmall">
+									<span class="icon alt major fa-area-chart"></span>
+									<h3>Emotional analysis</h3>
+									<p>At the end of each lecture, students make a one-line assessment of the lecture. By evaluating students' feelings about the lecture, they will select popular lectures and mentors.</p>
+								</section>
+								<section class="col-4 col-6-medium col-12-xsmall">
+									<span class="icon alt major fa-users"></span>
+									<h3>Online meeting</h3>
+									<p>A video conferencing service that lets you connect anywhere, anytime, with hardware! It is also very efficient when doing team projects.</p>
+								</section>
+								<section class="col-4 col-6-medium col-12-xsmall">
+									<span class="icon alt major fa-laptop"></span>
+									<h3>Screen sharing</h3>
+									<p>How interesting is it to be able to share screens in real time</p>
+								</section>
+								<section class="col-4 col-6-medium col-12-xsmall">
+									<span class="icon alt major fa-comments-o"></span>
+									<h3>chatting</h3>
+									<p>Users can communicate with each other. Would not it be nice to do something like share a website address? </p>
+								</section>
+								<section class="col-4 col-6-medium col-12-xsmall">
+									<span class="icon alt major fa-folder-open-o"></span>
+									<h3>File transfer</h3>
+									<p>File transfer between users is possible.Share materials for meetings and classes. </p>
+								</section>
+								<section class="col-4 col-6-medium col-12-xsmall">
+									<span class="icon alt major fa-lock"></span>
+									<h3>Locking</h3>
+									<p>If you want to have a secret meeting, you can lock it to prevent outsiders from coming in.</p>
+								</section>
+							</div>
+						</div>
+					</div>
+				</section>
 
+			<!-- Five -->
+				<section id="five" class="wrapper style2 special fade">
+					<div class="container">
+						<header>
+							<h2>Mentors, anyone who is in junior or higher can apply.</h2>
+							<p>Do not hesitate to share your knowledge.</p>
+						</header>
+						
+					</div>
+				</section>
 
+			<!-- Footer -->
+				<footer id="footer">
+					<ul class="icons">
+						<li><a href="#" class="icon alt fa-twitter"><span class="label">Twitter</span></a></li>
+						<li><a href="#" class="icon alt fa-facebook"><span class="label">Facebook</span></a></li>
+						<li><a href="#" class="icon alt fa-linkedin"><span class="label">LinkedIn</span></a></li>
+						<li><a href="#" class="icon alt fa-instagram"><span class="label">Instagram</span></a></li>
+						<li><a href="#" class="icon alt fa-github"><span class="label">GitHub</span></a></li>
+						<li><a href="#" class="icon alt fa-envelope"><span class="label">Email</span></a></li>
+					</ul>
+					<ul class="copyright">
+						<li>&copy; Untitled. All rights reserved.</li><li>Konkuk univ. Computer Science. team TEMP.</a></li>
+					</ul>
+				</footer>
 
+		</div>
 
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/jquery.dropotron.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
 
-
-
-
-                .select {
-                    height: 30px;
-                }
-                .h-90 {
-                    height: 90% !important;
-                }
-                .h-10 {
-                    height: 10% !important;
-                }
-        
-        
-        </style>
-</head>
-
-<body>
-    <div class="container-fluid">
-
-
-            <div class="row h-10 w-100">
-                    <select id="filter" class="w-50 bg-dark text-light ml-2 mt-2 select font-weight-bold border">
-                        <option value="none">Normal</option>
-                        <option value="grayscale(100%)">B & W</option>
-                        <option value="sepia(100%)">Old School</option>
-                        <option value="contrast(150%)">Lumination</option>
-                        <option value="blur(20px)">Hidden Mist</option>
-                        <option value="invert(100%)">Dracula</option>
-                        <option value="hue-rotate(180deg">X-men Beast</option>
-                        <option value="saturate(25)">Super Saiyan God</option>
-                    </select>
-                </div>
-        
-            <div>
-                <input type='text' id='chat' placeholder="메세지를 입력하세요.."></input>
-                <button id='chat_button'>전송</button>
-            </div>
-            
-
-
-
-
-
-
-
-
-        <div class="row h-90 w-100">
-                <div class="col-12 col-sm-6 d-flex justify-content-center">
-                        <div class="embed-responsive embed-responsive-16by9">
-                            <video id = "localVideo" class="embed-responsive-item" muted></video>
-                        </div>
-                    </div>
-
-
-                <div class="col-12 col-sm-6 d-flex justify-content-center" id=peerVideo_list></div>   
-        </div>
-    
-    
-    
-    </div>
-    <div class="chat">
-            <ul class="from_others"></ul>
-            <ul class="from_me"></ul>
-    </div>
-    
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="bundle.js"></script>
-</body>
-
+	</body>
 </html>
-
-
