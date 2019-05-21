@@ -27,9 +27,14 @@ io.on('connection', function (socket) {
         }
         
         console.log(Rooms)
-        Rooms[token].forEach(function(SocketId){
-            io.to(SocketId).emit("user-joined", socket.id, Rooms[token].length,Rooms[token])
-        })
+        if(Rooms[token].length > 6){
+                io.to(socket.id).emit("user-exceeded")
+        }else{
+            Rooms[token].forEach(function(SocketId){
+                io.to(SocketId).emit("user-joined", socket.id, Rooms[token].length,Rooms[token])
+            })
+        }
+     
          
         /*io.sockets.emit("user-joined", socket.id, io.engine.clientsCount, Object.keys(io.sockets.clients().sockets));*/
     })

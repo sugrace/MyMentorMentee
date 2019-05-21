@@ -28,7 +28,7 @@ if (document.location.hash === "" || document.location.hash === undefined) {
 
     // set location.hash to the unique token for this call
     document.location.hash = token;
-
+    alert(`Room is created , Your Room_Number is ${token}, `)
 
 }else{
     call_token = document.location.hash;
@@ -111,6 +111,9 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         socket.on('connect', function(){
             socket.emit('token_number',call_token);
             socketId = socket.id;
+            socket.on('user-exceeded',function(){
+                alert('user exceeded!')
+            })
             socket.on('user-left', function(id){
                 var video = document.getElementById(`${id}`);
                 video.parentElement.remove();
