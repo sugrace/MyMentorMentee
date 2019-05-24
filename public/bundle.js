@@ -4,6 +4,7 @@ let socketId;
 const localVideo = document.getElementById('localVideo');
 const filter = document.querySelector('#filter')
 const chat_button = document.getElementById('chat_button')
+const screenshare_button = document.getElementById('screenshare_button')
 let connections = [];
 let inboundStream = null;
 let stream_cnt=0;
@@ -91,7 +92,25 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
 
         });
         
-        
+        screenshare_button.addEventListener('click',event =>{
+            var constraints = {
+                video: true,
+                audio: true,
+            };
+            navigator.mediaDevices.getDisplayMedia(constraints).then(screenstream =>{
+                 stream = screenstream 
+                 localVideo.srcObject=screenstream;
+                 localVideo.play();
+                 let screenTrack = screenstream.getVideoTracks()[0];
+                 Object.keys(connections).forEach(function(connection) {
+                    var sender = connections[connection].getSenders().find(function(s) {
+                      return s.track.kind == screenTrack.kind;
+                    });
+                    console.log('found sender:', sender);
+                    sender.replaceTrack(screenTrack);
+                  });
+            })
+        })
         
         
         
