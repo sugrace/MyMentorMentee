@@ -5,6 +5,8 @@ const localVideo = document.getElementById('localVideo');
 const filter = document.querySelector('#filter')
 const chat_button = document.getElementById('chat_button')
 const screenshare_button = document.getElementById('screenshare_button')
+
+
 let connections = [];
 let inboundStream = null;
 let stream_cnt=0;
@@ -92,26 +94,46 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
 
         });
         
-        screenshare_button.addEventListener('click',event =>{
+        screenshare_button.addEventListener('click', event =>{
             var constraints = {
                 video: true,
                 audio: true,
             };
-            navigator.mediaDevices.getDisplayMedia(constraints).then(screenstream =>{
-                 stream = screenstream 
-                 localVideo.srcObject=screenstream;
-                 localVideo.play();
-                 let screenTrack = screenstream.getVideoTracks()[0];
-                 Object.keys(connections).forEach(function(connection) {
-                    var sender = connections[connection].getSenders().find(function(s) {
-                      return s.track.kind == screenTrack.kind;
-                    });
-                    console.log('found sender:', sender);
-                    sender.replaceTrack(screenTrack);
-                  });
-            })
-        })
+            if(screenshare_button.innerHTML == '화면공유'){
+                navigator.mediaDevices.getDisplayMedia(constraints).then(screenstream =>{
+                    screenshare_button.innerHTML='화면공유중단'
         
+                        stream = screenstream 
+                         localVideo.srcObject=screenstream;
+                         localVideo.play();
+                         let screenTrack = screenstream.getVideoTracks()[0];
+                         Object.keys(connections).forEach(function(connection) {
+                            var sender = connections[connection].getSenders().find(function(s) {
+                              return s.track.kind == screenTrack.kind;
+                            });
+                            console.log('found sender:', sender);
+                            sender.replaceTrack(screenTrack);
+                          });
+                    })
+            }else if(screenshare_button.innerHTML == '화면공유중단'){
+                navigator.mediaDevices.getUserMedia(constraints).then(videostream =>{
+                    screenshare_button.innerHTML='화면공유'
+        
+                        stream = videostream 
+                         localVideo.srcObject=videostream;
+                         localVideo.play();
+                         let videoTrack = videostream.getVideoTracks()[0];
+                         Object.keys(connections).forEach(function(connection) {
+                            var sender = connections[connection].getSenders().find(function(s) {
+                              return s.track.kind == videoTrack.kind;
+                            });
+                            console.log('found sender:', sender);
+                            sender.replaceTrack(videoTrack);
+                          });
+                    })
+            }
+            
+        })
         
         
         socket = io()
