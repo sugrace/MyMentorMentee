@@ -22,6 +22,9 @@ let localStream;
 
 let token;
 let call_token;
+
+checkSignIn();
+
 if (document.location.hash === "" || document.location.hash === undefined) { 
 
     // create the unique token for this call 
