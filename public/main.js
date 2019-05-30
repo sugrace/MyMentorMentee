@@ -36,7 +36,6 @@ if (document.location.hash === "" || document.location.hash === undefined) {
     call_token = document.location.hash;
 }
 
-console.log(call_token.split('#'))
 Room_Number.innerHTML = 'Room_Number : '+ call_token.split('#')[1];
 
 
@@ -49,7 +48,6 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         
         localVideo.srcObject = stream
         localVideo.play();
-        
         
         filter.addEventListener('change', (event) => {
             currentFilter = event.target.value
@@ -313,6 +311,14 @@ function gotMessageFromServer(fromId, message) {
 function gotRemoteStream(event, id) {
 
     if(stream_cnt==0){
+    enlargement_button =document.createElement('button');
+    enlargement_button.className ="icon alt fa-laptop";
+    
+    enlargement_button.addEventListener('click', (event) => {
+      document.getElementById(id).requestFullscreen();
+    })
+    
+    
         video  = document.createElement('video'),
     video.setAttribute('id', id);
     div    = document.createElement('div')
@@ -324,7 +330,9 @@ function gotRemoteStream(event, id) {
     //video.playsinline = true;
     
     div.appendChild(video);      
-    document.getElementById('peerVideo_list').appendChild(div);     
+    div.appendChild(enlargement_button)
+    document.getElementById('peerVideo_list').appendChild(div);
+         
     video.autoplay    = true;  
     }
    
