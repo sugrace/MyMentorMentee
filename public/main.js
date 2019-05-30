@@ -44,9 +44,6 @@ if (document.location.hash === "" || document.location.hash === undefined) {
 
 navigator.mediaDevices.getUserMedia({ video: true, audio: true })
     .then(stream => {
-
-       
-
         
         localVideo.srcObject = stream
         localVideo.play();
@@ -254,7 +251,8 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
             });          
         })    
     })
-    .catch(err => document.write(err))
+    // .catch(err => document.write(err));
+    .catch(err => alert(`Can not start the app due to this reason: ${err}`));
 
 function gotMessageFromServer(fromId, message) {
 
@@ -340,5 +338,16 @@ function SendData(data) {
             connections[connection_id].channel.send(JSON.stringify(data))
             }
         })
+    }
+}
+
+// 권한없이 url을 통한 우회 접속 시 차단
+function checkSignIn() {
+    if(!sessionStorage['accessToken']) {
+        alert('First, sign in to use the service!!!');
+        window.location.replace('index.html');
+        return;
+    } else {
+        //
     }
 }

@@ -7,8 +7,10 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+		<!--AWS cognito test code starts here!!!-->
+		<script src="assets/js/amazon-cognito-identity.min.js"></script>
 	</head>
-	<body class="is-preload">
+	<body class="is-preload" onload="initRenderPage()">
 		<div id="page-wrapper">
 
 			<!-- Header -->
@@ -38,7 +40,7 @@
 							<li><a href="mypage.html">My Page</a></li>
 
 							<li><a href="signup.html" class="button primary"> Sign Up</a></li>
-							<li><a href="login.html" class="button primary">Log In</a></li>
+							<li><a href="login.html" class="button primary">Sign In</a></li>
 						
 						</ul>
 					</nav>
@@ -60,23 +62,32 @@
 									<tr height = "2" bgcolor = "#FFC8C3"><td colspan="2"></td></tr>
 								
 									<tr>
-										<th>ID</th>
+										<th>Username</th>
 										<td>
-										<input type="text" name="usrid"></td>
+										<input type="text" id="username" name="username" placeholder="username or email"></td>
 									</tr>
 									<tr>
 										<th>Password</th>
-										<td><input type="password" name="usrpw"> 6 characters, including English and numbers</td>
+										<td><input type="password" id="userpw" name="userpw"></td>
 									</tr>
 								
 									
      									<tr>
 									<td colspan="2" align ="center">
-										<input type="submit" value="Log in" class="fit primary"/>
+										<input type="button" value="Log in" class="fit primary" onclick="signInById()"/>
 									</td>
 									</tr>
 								</table>
 								</form>
+								<!--My Test Code-->
+								<!-- <form action="#" method="post" name="form_name" id="form_id" class="form_class" >
+										<h2>Javascript Form SignIn Example</h2>
+										<label>Username :</label>
+										<input type="text" name="name" id="name" placeholder="Name" />
+										<label>Password :</label>
+										<input type="password" name="password" id="password" placeholder="Valid Password" />
+										<input type="button" name="submit_id" id="btn_id" value="Submit by Id" onclick="signInById()"/>
+								</form> -->
 							</section>
 
 					</div>
@@ -108,6 +119,69 @@
 			<script src="assets/js/breakpoints.min.js"></script>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
+			<script>
+				function initRenderPage() {
+					if(!sessionStorage['accessToken']) {
+						console.log('ok');
+					} else {
+						var accessToken = JSON.parse(sessionStorage['accessToken']);
+						alert(`Already signed in as ${accessToken.payload['cognito:username']}`);
+						window.location.replace('index.html');
+					}
+					//console.log(accessToken);
+				}
+
+				// function test() {
+				// 	console.log('test');
+				// 	let a = 1;
+				// 	if(a == 1) {
+				// 		window.location.replace("index.html");
+				// 	} else {
+				// 		console.log('fail');
+				// 	}
+				// }
+
+				function signInById() {
+					const poolData = { UserPoolId : 'ap-northeast-2_HlI8qUsem',
+						ClientId : '6dci0nnp78qfagug9segfpdc3l'
+					};
+
+					var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+
+					var userName = document.getElementById("username").value;
+					var userPW = document.getElementById("userpw").value;
+
+					var authenticationData = {
+						Username : userName,
+						Password : userPW,
+					};
+					var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(authenticationData);
+
+					var userData = {
+						Username : userName,
+						Pool : userPool
+					};
+
+					var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+
+					var jwtIdToken; // important!!!
+					cognitoUser.authenticateUser(authenticationDetails, {
+						onSuccess: function(result) {
+							jwtIdToken = result.idToken;
+							//console.log(accessToken);
+							sessionStorage.accessToken = JSON.stringify(jwtIdToken);
+							//console.log(result);
+							console.log(JSON.parse(sessionStorage['accessToken']).payload.email);
+							console.log('sign in success!!!');
+							window.location.replace("index.html");
+						},
+						onFailure: function(err) {
+							console.log(err);
+							alert(err.message);
+						},
+					});
+				}
+			</script>
 
 	</body>
 </html>

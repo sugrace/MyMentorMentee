@@ -8,14 +8,14 @@
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
 	</head>
-	<body class="is-preload landing">
+	<body class="is-preload landing" onload="initRenderPage()">
 		<div id="page-wrapper">
 
 			<!-- Header -->
 				<header id="header">
 					<h1 id="logo"><a href="index.html">My Mentor Mentee</a></h1>
 					<nav id="nav">
-						<ul>
+						<ul id="myNav">
 							<li><a href="index.html">Home</a></li>
 							<li>
 								<a href="#">Mentoring</a>
@@ -37,8 +37,8 @@
 							<li><a href="boards.html">Boards</a></li>
 							<li><a href="mypage.html">My Page</a></li>
 							
-							<li><a href="signup.html" class="button primary">Sign Up</a></li>
-							<li><a href="login.html" class="button primary">Log In</a></li>
+							<!-- <li><a href="signup.html" class="button primary">Sign Up</a></li>
+							<li><a href="login.html" class="button primary">Sign In</a></li> -->
 						</ul>
 					</nav>
 				</header>
@@ -71,14 +71,14 @@
 								<div class="col-4 col-12-medium">
 									<p>Create Room</p>
 										<div class="row gtr-uniform gtr-50">
-										<div class="col-4 col-12-xsmall"><input type="button" value="Create" class="fit primary" onclick= "document.location.assign('/Room.html')"/></div>
+										<div class="col-4 col-12-xsmall"><input type="button" value="Create" class="fit primary" onclick= "createRoom()"/></div>
 										</div>
 								</div>
 								<div class="col-4 col-12-medium">
 									<p>Join Room</p>
 										<div class="row gtr-uniform gtr-50">
                                             <div class="col-8 col-12-xsmall"><input type="text" name="study" id="study" placeholder="Room_number you want to enter" /></div>
-                                        <div class="col-4 col-12-xsmall"><input type="button" value="Join" class="fit primary" onclick= "document.location.assign(`/Room.html#${document.getElementById('study').value}`)"/></div>
+                                        <div class="col-4 col-12-xsmall"><input type="button" value="Join" class="fit primary" onclick= "joinRoom(document.getElementById('study').value)"/></div>
                                       
 										</div>
 								</div>
@@ -207,6 +207,46 @@
 			<script src="assets/js/breakpoints.min.js"></script>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
+			<script>
+				function initRenderPage() {
+					if(!sessionStorage['accessToken']) {
+						document.getElementById('myNav').innerHTML += '<li><a href="signup.html" class="button primary">Sign Up</a></li>';
+						document.getElementById('myNav').innerHTML += '<li><a href="login.html" class="button primary">Sign In</a></li>';
+					} else {
+						var accessToken = JSON.parse(sessionStorage['accessToken']);
+						document.getElementById('myNav').innerHTML += '<li>'+ accessToken.payload['cognito:username'] +'</li>';
+						document.getElementById('myNav').innerHTML += '<li><a href="login.html" class="button primary" onclick="signOut()">Sign out</a></li>';
+					}
+					//console.log(accessToken);
+				}
+
+				function signOut() {
+					sessionStorage.clear();
+					window.location.replace("index.html");
+				}
+
+				function createRoom() {
+					if(!sessionStorage['accessToken']) {
+						alert("First, sign in to use the service!");
+						return;
+					} else {
+						var accessToken = JSON.parse(sessionStorage['accessToken']);
+						// username을 이 함수로 전달하거나, Room.html 내에서 sessionStorage를 통해 username을 획득해도 된다.
+						document.location.assign('Room.html');
+					}
+				}
+
+				function joinRoom(roomParam) {
+					if(!sessionStorage['accessToken']) {
+						alert("First, sign in to use the service!");
+						return;
+					} else {
+						var roomNumber = roomParam;
+						var accessToken = JSON.parse(sessionStorage['accessToken']);
+						document.location.assign(`Room.html#${roomNumber}`);
+					}
+				}
+			</script>
 
 	</body>
 </html>
