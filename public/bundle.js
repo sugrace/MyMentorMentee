@@ -43,9 +43,6 @@ Room_Number.innerHTML = 'Room_Number : '+ call_token.split('#')[1];
 
 navigator.mediaDevices.getUserMedia({ video: true, audio: true })
     .then(stream => {
-
-       
-
         
         localVideo.srcObject = stream
         localVideo.play();
@@ -265,7 +262,7 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
             });          
         })    
     })
-    .catch(err => document.write(err))
+    .catch(err => document.write(err));
 
 function gotMessageFromServer(fromId, message) {
 
