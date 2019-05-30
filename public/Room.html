@@ -5,7 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" crossorigin="anonymous" href="https://meta-kage.kakaocdn.net/dn/osa/blog/assets/fonts/Kakao.css"/> 
-    
+		<link rel="stylesheet" href="assets/css/main.css" />
+        
+
+       
+            
+
+
+
         <style>
             .chat{
                 width: 380px;
@@ -140,35 +147,95 @@
                     height: 10% !important;
                 }
         
-        
+                
         </style>
 </head>
 
 <body>
+
+
+
+
+
+
+
+
+
+
+
+
+        <header id="header">
+                <h1 id="logo">M3</a></h1>
+                <nav id="nav">
+                    <ul class="icons">
+                        <li><a href="#" class="icon alt fa-number"><span class="label">RoomNumber</span></a></li>
+                        <li>
+                                <select id="filter" class="icon alt fa-folder-open-o">
+                                    <option value="none">Filter</option>
+                                    <option value="grayscale(100%)">B & W</option>
+                                    <option value="sepia(100%)">Old School</option>
+                                    <option value="contrast(150%)">Lumination</option>
+                                    <option value="blur(20px)">Hidden Mist</option>
+                                    <option value="invert(100%)">Dracula</option>
+                                    <option value="hue-rotate(180deg">X-men Beast</option>
+                                    <option value="saturate(25)">Super Saiyan God</option>
+                                </select>
+                        </li>
+
+                        <li><a href="#" class="icon alt fa-unlock-alt"><span class="label">lock</span></a></li>
+                        <li><a href="#" class="icon alt fa-number">
+                            <button id='screenshare_button' class="icon alt fa-laptop">화면공유</button></a>
+                        </li>
+                        
+                        <li><a href="#" class="icon alt fa-number">
+                            <button id='chatting_bar' class="icon alt fa-number icon alt fa-comments-o">Chatting</button></a>
+                        </li>
+
+
+                        <li><a href="index.html" class="icon alt fa-sign-out"><span class="label">close</span></a></li>
+                        
+                    
+                    </ul>
+                </nav>
+            </header>
+
+
+
+
+
+            <br>
+           <br><br>
+   
+            <div class="container" hidden >
+                <div class="row">
+                    <div class="col-4 col-12-medium">
+                        <div class="row gtr-uniform gtr-50">
+                                <div class="col-8 col-12-xsmall"> <input type='text' id='chat' placeholder="메세지를 입력하세요.."></div>
+                                <div class="col-4 col-12-xsmall"><button id='chat_button'>전송</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+              
+              
+        
+                </div>
+       
+
+
+
+
+
+
+
+
+
     <div class="container-fluid">
 
 
-            <div class="row h-10 w-100">
-                    <select id="filter" class="w-50 bg-dark text-light ml-2 mt-2 select font-weight-bold border">
-                        <option value="none">Normal</option>
-                        <option value="grayscale(100%)">B & W</option>
-                        <option value="sepia(100%)">Old School</option>
-                        <option value="contrast(150%)">Lumination</option>
-                        <option value="blur(20px)">Hidden Mist</option>
-                        <option value="invert(100%)">Dracula</option>
-                        <option value="hue-rotate(180deg">X-men Beast</option>
-                        <option value="saturate(25)">Super Saiyan God</option>
-                    </select>
-                </div>
-        
-            <div>
-                <input type='text' id='chat' placeholder="메세지를 입력하세요.."></input>
-                <button id='chat_button'>전송</button>
-            </div>
-            <div>
-                    <button id='screenshare_button'>화면공유</button>
-                    
-            </div>
+            
 
 
 
@@ -191,13 +258,26 @@
     
     
     </div>
-    <div class="chat">
+    <div class="chat" hidden >
             <ul class="from_others"></ul>
             <ul class="from_me"></ul>
     </div>
+
+    	<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/jquery.dropotron.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+            <script src="/socket.io/socket.io.js"></script>
+            <script src="bundle.js"></script>
     
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="bundle.js"></script>
+    </div>
+
+
 </body>
 
 </html>

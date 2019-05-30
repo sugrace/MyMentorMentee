@@ -5,8 +5,8 @@ const localVideo = document.getElementById('localVideo');
 const filter = document.querySelector('#filter')
 const chat_button = document.getElementById('chat_button')
 const screenshare_button = document.getElementById('screenshare_button')
-
-
+const Room_Number = document.querySelector('#nav > ul > li:nth-child(1) > a > span');
+const chatting_bar = document.getElementById('chatting_bar');
 let connections = [];
 let inboundStream = null;
 let stream_cnt=0;
@@ -32,14 +32,13 @@ if (document.location.hash === "" || document.location.hash === undefined) {
     // set location.hash to the unique token for this call
     document.location.hash = token;
     alert(`Room is created , Your Room_Number is ${token}, `)
-
+    
 }else{
     call_token = document.location.hash;
 }
 
-
-
-
+console.log(call_token.split('#'))
+Room_Number.innerHTML = 'Room_Number : '+ call_token.split('#')[1];
 
 
 
@@ -64,7 +63,20 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
             event.preventDefault
         })
         
-        
+        chatting_bar.addEventListener('click',event =>{
+            let message_box = document.querySelector('body > div.container').hidden;
+          
+           
+            if(message_box == true ){
+                document.querySelector('body > div.container').hidden = false;
+                document.querySelector('body > div.chat').hidden = false;
+            }else{
+                document.querySelector('body > div.container').hidden=true;
+                document.querySelector('body > div.chat').hidden = true;
+            }
+           
+           
+        })
         chat_button.addEventListener('click',event=>{
             let data = {}
             let text = document.getElementById('chat').value;
@@ -103,7 +115,7 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
                 navigator.mediaDevices.getDisplayMedia(constraints).then(screenstream =>{
                     screenshare_button.innerHTML='화면공유중단'
         
-                        stream = screenstream 
+                        stream = screenstream
                          localVideo.srcObject=screenstream;
                          localVideo.play();
                          let screenTrack = screenstream.getVideoTracks()[0];
