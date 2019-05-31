@@ -1,9 +1,10 @@
 let socket;
 let socketId;
 const localVideo = document.getElementById('localVideo');
-const filter = document.querySelector('#filter')
-const chat_button = document.getElementById('chat_button')
-const screenshare_button = document.getElementById('screenshare_button')
+const filter = document.querySelector('#filter');
+const chat_button = document.getElementById('chat_button');
+const screenshare_button = document.getElementById('screenshare_button');
+const lock_button = document.getElementById('lock_button');
 const Room_Number = document.querySelector('#nav > ul > li:nth-child(1) > a > span');
 const chatting_bar = document.getElementById('chatting_bar');
 let connections = [];
@@ -23,7 +24,7 @@ let localStream;
 let token;
 let call_token;
 
-checkSignIn();
+//checkSignIn();
 
 if (document.location.hash === "" || document.location.hash === undefined) { 
 
@@ -134,6 +135,11 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
                     })
             }
         })
+        lock_button.addEventListener('click', event =>{
+        socket.emit('request_lock',document.location.hash)
+        })
+
+
         
         socket = io()
 
@@ -237,39 +243,50 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         })    
     }).catch(err => alert(`Can not start the app due to this reason: ${err}`));
 
-function gotMessageFromServer(fromId, message) {
-        //Parse the incoming signal
-        var signal = JSON.parse(message)
+function gotMessageFromServer(fromId, message, type) {
         //Make sure it's not coming from yourself
+    if(type == 'sdp'){
         if(fromId != socketId) {
-            if(signal.sdp){            
-                connections[fromId].setRemoteDescription(new RTCSessionDescription(signal.sdp)).then(function() {                
-                    if(signal.sdp.type == 'offer') {
-                        connections[fromId].createAnswer().then(function(description){
-                            connections[fromId].setLocalDescription(description).then(function() {
-                                socket.emit('signal', fromId, JSON.stringify({'sdp': connections[fromId].localDescription}));
-                            }).catch(e => console.log(e));        
-                        }).catch(e => console.log(e));
-                    }else if(signal.sdp.type == 'answer'){
-                       /* connections[fromId].ondatachannel = function(event) {
-                            let channel = event.channel;
-                            connections[fromId].channel = channel
-                              channel.onopen = function(event) {
-                                  console.log('it is receive peer')
-                              //channel.send('it is receive peer');
-                            }
-                            channel.onmessage = function(event) {
-                                var data = JSON.parse(event.data)
-                                console.log(data)
-                                document.getElementById(`${data.id}`).style.filter = data.currentFilter;
-                            }
-                        }*/
-                    }
-                }).catch(e => console.log(e));
+            var signal = JSON.parse(message)
+                if(signal.sdp){            
+                    connections[fromId].setRemoteDescription(new RTCSessionDescription(signal.sdp)).then(function() {                
+                        if(signal.sdp.type == 'offer') {
+                            connections[fromId].createAnswer().then(function(description){
+                                connections[fromId].setLocalDescription(description).then(function() {
+                                    socket.emit('signal', fromId, JSON.stringify({'sdp': connections[fromId].localDescription}));
+                                }).catch(e => console.log(e));        
+                            }).catch(e => console.log(e));
+                        }else if(signal.sdp.type == 'answer'){
+                           /* connections[fromId].ondatachannel = function(event) {
+                                let channel = event.channel;
+                                connections[fromId].channel = channel
+                                  channel.onopen = function(event) {
+                                      console.log('it is receive peer')
+                                  //channel.send('it is receive peer');
+                                }
+                                channel.onmessage = function(event) {
+                                    var data = JSON.parse(event.data)
+                                    console.log(data)
+                                    document.getElementById(`${data.id}`).style.filter = data.currentFilter;
+                                }
+                            }*/
+                        }
+                    }).catch(e => console.log(e));
+                }
+                if(signal.ice) {
+                    connections[fromId].addIceCandidate(new RTCIceCandidate(signal.ice)).catch(e => console.log(e));
+                }                
             }
-            if(signal.ice) {
-                connections[fromId].addIceCandidate(new RTCIceCandidate(signal.ice)).catch(e => console.log(e));
-            }                
+        }
+        else if(type == 'lock'){
+            if(message == true){
+                alert("Room is deleted in Signaling Server")
+                Room_Number.innerHTML="Secret Room"
+            }else if(message == false){
+                alert("You are not a Room's owner")
+            }
+        
+          
         }
 }
 function gotRemoteStream(event, id) {

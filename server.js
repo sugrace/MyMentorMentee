@@ -39,13 +39,26 @@ io.on('connection', function (socket) {
         /*io.sockets.emit("user-joined", socket.id, io.engine.clientsCount, Object.keys(io.sockets.clients().sockets));*/
     })
 	socket.on('signal', (toId, message) => {
-		io.to(toId).emit('signal', socket.id, message);
+		io.to(toId).emit('signal', socket.id, message,'sdp');
   	});
 
     socket.on("message", function(data){
 		io.sockets.emit("broadcast-message", socket.id, data);
     })
-
+    socket.on("request_lock",function(RoomId){
+       if(Rooms[RoomId]!=undefined){
+            if(Rooms[RoomId][0]==socket.id){
+                Rooms[RoomId].forEach(function(socketId){
+                    io.to(socketId).emit("signal",socket.id, true ,'lock')
+                })
+                delete Rooms[RoomId];
+                console.log(Rooms)
+            }else{
+                io.to(socket.id).emit("signal",socket.id, false,'lock')
+            }
+       }
+       
+    })
 	socket.on('disconnect', function() {
         let MyRoom
         let token
