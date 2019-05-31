@@ -286,8 +286,6 @@ function gotMessageFromServer(fromId, message, type) {
             }else if(message == false){
                 alert("You are not a Room's owner")
             }
-        
-          
         }
 }
 function gotRemoteStream(event, id) {
