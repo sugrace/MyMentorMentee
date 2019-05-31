@@ -1,169 +1,13 @@
 <html>
-
-<head>
-    <title>MyMentorMentee</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" crossorigin="anonymous" href="https://meta-kage.kakaocdn.net/dn/osa/blog/assets/fonts/Kakao.css"/> 
-		<link rel="stylesheet" href="assets/css/main.css" />
-        
-
-       
-            
-
-
-
-        <style>
-            .chat{
-                width: 380px;
-                padding: 10px 50px 10px 10px;
-                background-color:#a1c0d6;
-            }
-            .chat > ul{
-                position: relative;
-                width: 350px;
-                z-index: 0;
-            }
-            .chat > ul > li > span {
-                font-family:'Kakao';
-            }
-
-            ul.from_me {
-                text-align: right;
-            }
-            ul.from_me > li {
-                display: inline-block;
-                text-align: left;
-                position: relative;
-                background: #FCCE00;
-                word-wrap: break-word;
-                max-width: 240px;
-                padding:10px;
-                margin-top: 10px;
-                margin-bottom: 30px;
-                border-radius: 10px;
-            }
-            ul.from_me > li:after {
-                content: '';
-                position: absolute;
-                height: 25px;
-                width: 25px;
-                border-radius: 12.5px;
-                z-index: -1;
-                background: #a1c0d6;
-                bottom: -10px;
-                right: -13px;
-            }
-            ul.from_me > li:before {
-                content: '';
-                position: absolute;
-                height: 25px;
-                width: 25px;
-                border-radius: 12.5px;
-                z-index: -1;
-                background: #FCCE00;
-                bottom: -6px;
-                right: -4px;
-            }
-
-            ul.from_me > li > span.nm {
-                position: absolute;
-                right:0px;
-                top:-20px;
-            }
-
-            ul.from_me > li > span.tm {
-                position: absolute;
-                font-size: 14px;
-                left:-55px;
-                bottom:0px;
-            }
-            ul.from_others > li {
-                display: inline-block;
-                position: relative;
-                
-                background: #FFFFFD;
-                
-                word-wrap: break-word;
-                max-width: 240px;
-                padding:10px;
-                margin-top: 10px;
-                margin-bottom: 30px;
-                border-radius: 10px;
-            }
-            ul.from_others > li:after {
-                content: '';
-                position: absolute;
-                height: 25px;
-                width: 25px;
-                border-radius: 12.5px;
-                z-index: -1;
-                background: #a1c0d6;
-                bottom: -10px;
-                left: -13px;
-            }
-            ul.from_others > li:before {
-                content: '';
-                position: absolute;
-                height: 25px;
-                width: 25px;
-                border-radius: 12.5px;
-                z-index: -1;
-                background: #FFFFFD;
-                bottom: -6px;
-                left: -4px;
-            }
-            ul.from_others {
-                text-align: left;
-            }
-
-            ul.from_others > li > span.nm {
-                position: absolute;
-                left:0px;
-                top:-20px;
-            }
-
-            ul.from_others > li > span.tm {
-                position: absolute;
-                font-size: 14px;
-                right:-55px;
-                bottom:0px;
-            }
-
-
-
-
-
-
-
-
-                .select {
-                    height: 30px;
-                }
-                .h-90 {
-                    height: 90% !important;
-                }
-                .h-10 {
-                    height: 10% !important;
-                }
-        
-                
-        </style>
-</head>
-
-<body>
-
-
-
-
-
-
-
-
-
-
-
-
+    <head>
+        <title>MyMentorMentee</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" crossorigin="anonymous" href="https://meta-kage.kakaocdn.net/dn/osa/blog/assets/fonts/Kakao.css"/> 
+        <link rel="stylesheet" href="assets/css/main.css" />
+        <link rel="stylesheet" href="assets/css/chat.css" />
+    </head>
+    <body>
         <header id="header">
                 <h1 id="logo">M3</a></h1>
                 <nav id="nav">
@@ -183,6 +27,7 @@
                         </li>
 
                         <li><a href="#" class="icon alt fa-unlock-alt"><span class="label">lock</span></a></li>
+                        
                         <li><a href="#" class="icon alt fa-number">
                             <button id='screenshare_button' class="icon alt fa-laptop">화면공유</button></a>
                         </li>
@@ -191,77 +36,40 @@
                             <button id='chatting_bar' class="icon alt fa-number icon alt fa-comments-o">Chatting</button></a>
                         </li>
 
-
                         <li><a href="index.html" class="icon alt fa-sign-out"><span class="label">close</span></a></li>
-                        
-                    
                     </ul>
                 </nav>
             </header>
 
-
-
-
-
-            <br>
-           <br><br>
+            <br><br><br>
    
             <div class="container" hidden >
                 <div class="row">
-                    <div class="col-4 col-12-medium">
-                        <div class="row gtr-uniform gtr-50">
+                     <div class="col-4 col-12-medium">
+                          <div class="row gtr-uniform gtr-50">
                                 <div class="col-8 col-12-xsmall"> <input type='text' id='chat' placeholder="메세지를 입력하세요.."></div>
-                                <div class="col-4 col-12-xsmall"><button id='chat_button'>전송</div>
-                        </div>
+                                  <div class="col-4 col-12-xsmall"><button id='chat_button'>전송</div>
+                         </div>
                     </div>
+               </div>
+            </div>
+   
+
+
+            <div class="container-fluid">
+                <div class="row h-90 w-100">
+                        <div class="col-12 col-sm-6 d-flex justify-content-center">
+                                <div class="embed-responsive embed-responsive-16by9">
+                                    <video id = "localVideo" class="embed-responsive-item" muted></video>
+                                </div>
+                            </div>
+                        <div class="col-12 col-sm-6 d-flex justify-content-center" id=peerVideo_list></div>   
                 </div>
             </div>
-
-
-              
-              
-        
-                </div>
-       
-
-
-
-
-
-
-
-
-
-    <div class="container-fluid">
-
-
-            
-
-
-
-
-
-
-
-
-        <div class="row h-90 w-100">
-                <div class="col-12 col-sm-6 d-flex justify-content-center">
-                        <div class="embed-responsive embed-responsive-16by9">
-                            <video id = "localVideo" class="embed-responsive-item" muted></video>
-                        </div>
-                    </div>
-
-
-                <div class="col-12 col-sm-6 d-flex justify-content-center" id=peerVideo_list></div>   
-        </div>
-    
-    
-    
-    </div>
-    <div class="chat" hidden >
-            <ul class="from_others"></ul>
-            <ul class="from_me"></ul>
-    </div>
+            <div class="chat" hidden >
+                    <ul class="from_others"></ul>
+                    <ul class="from_me"></ul>
+            </div>
 
     	<!-- Scripts -->
 			<script src="assets/js/jquery.min.js"></script>
@@ -275,10 +83,8 @@
             <script src="/socket.io/socket.io.js"></script>
             <script src="bundle.js"></script>
     
-    </div>
 
-
-</body>
+    </body>
 
 </html>
 

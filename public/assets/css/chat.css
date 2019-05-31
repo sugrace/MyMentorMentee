@@ -1,0 +1,139 @@
+.chat{
+    width: 380px;
+    padding: 10px 50px 10px 10px;
+    background-color:#a1c0d6;
+}
+.chat > ul{
+    position: relative;
+    width: 350px;
+    z-index: 0;
+}
+.chat > ul > li > span {
+    font-family:'Kakao';
+}
+
+ul.from_me {
+    text-align: right;
+}
+ul.from_me > li {
+    display: inline-block;
+    text-align: left;
+    position: relative;
+    background: #FCCE00;
+    word-wrap: break-word;
+    max-width: 240px;
+    padding:10px;
+    margin-top: 10px;
+    margin-bottom: 30px;
+    border-radius: 10px;
+}
+ul.from_me > li:after {
+    content: '';
+    position: absolute;
+    height: 25px;
+    width: 25px;
+    border-radius: 12.5px;
+    z-index: -1;
+    background: #a1c0d6;
+    bottom: -10px;
+    right: -13px;
+}
+ul.from_me > li:before {
+    content: '';
+    position: absolute;
+    height: 25px;
+    width: 25px;
+    border-radius: 12.5px;
+    z-index: -1;
+    background: #FCCE00;
+    bottom: -6px;
+    right: -4px;
+}
+
+ul.from_me > li > span.nm {
+    Color : rgb(7,7,7);
+    position: absolute;
+    right:0px;
+    top:-20px;
+}
+
+ul.from_me > li > span.tm {
+    position: absolute;
+    font-size: 14px;
+    left:-55px;
+    bottom:0px;
+}
+ul.from_me > li > span.co {
+    Color : rgb(8, 8, 8);
+    font-size:  18px;
+}
+
+
+ul.from_others > li {
+    display: inline-block;
+    position: relative;
+    
+    background: #FFFFFD;
+    
+    word-wrap: break-word;
+    max-width: 240px;
+    padding:10px;
+    margin-top: 10px;
+    margin-bottom: 30px;
+    border-radius: 10px;
+}
+ul.from_others > li:after {
+    content: '';
+    position: absolute;
+    height: 25px;
+    width: 25px;
+    border-radius: 12.5px;
+    z-index: -1;
+    background: #a1c0d6;
+    bottom: -10px;
+    left: -13px;
+}
+ul.from_others > li:before {
+    content: '';
+    position: absolute;
+    height: 25px;
+    width: 25px;
+    border-radius: 12.5px;
+    z-index: -1;
+    background: #FFFFFD;
+    bottom: -6px;
+    left: -4px;
+}
+ul.from_others {
+    text-align: left;
+}
+
+ul.from_others > li > span.nm {
+    Color : rgb(7,7,7);
+    position: absolute;
+    left:0px;
+    top:-20px;
+}
+
+ul.from_others > li > span.tm {
+    position: absolute;
+    font-size: 14px;
+    right:-55px;
+    bottom:0px;
+}
+ul.from_others > li > span.co {
+    Color : rgb(8, 8, 8);
+    font-size:  18px;
+}
+    .select {
+        height: 30px;
+    }
+    .h-90 {
+        height: 90% !important;
+    }
+    .h-10 {
+        height: 10% !important;
+    }
+
+
+    

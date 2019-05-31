@@ -41,8 +41,6 @@ if (document.location.hash === "" || document.location.hash === undefined) {
 
 Room_Number.innerHTML = 'Room_Number : '+ call_token.split('#')[1];
 
-
-
 navigator.mediaDevices.getUserMedia({ video: true, audio: true })
     .then(stream => {
         
@@ -62,8 +60,6 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         
         chatting_bar.addEventListener('click',event =>{
             let message_box = document.querySelector('body > div.container').hidden;
-          
-           
             if(message_box == true ){
                 document.querySelector('body > div.container').hidden = false;
                 document.querySelector('body > div.chat').hidden = false;
@@ -71,9 +67,8 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
                 document.querySelector('body > div.container').hidden=true;
                 document.querySelector('body > div.chat').hidden = true;
             }
-           
-           
         })
+
         chat_button.addEventListener('click',event=>{
             let data = {}
             let text = document.getElementById('chat').value;
@@ -98,9 +93,7 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
             chat.appendChild(br)
             data.type = 'chat'
             data.text=text;
-
             SendData(data)
-
         });
         
         screenshare_button.addEventListener('click', event =>{
@@ -111,7 +104,6 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
             if(screenshare_button.innerHTML == '화면공유'){
                 navigator.mediaDevices.getDisplayMedia(constraints).then(screenstream =>{
                     screenshare_button.innerHTML='화면공유중단'
-        
                         stream = screenstream
                          localVideo.srcObject=screenstream;
                          localVideo.play();
@@ -141,21 +133,9 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
                           });
                     })
             }
-            
         })
         
-        
         socket = io()
-
-
-
-
-
-
-
-
-
-
 
         socket.on('signal', gotMessageFromServer);
         socket.on('connect', function(){
@@ -196,7 +176,6 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
                                     socket.emit('signal', client_socket_id, JSON.stringify({'ice': event.candidate}));
                                 }
                             }
-                        
                             connections[client_socket_id].ondatachannel = function(event) {
                                 let channel = event.channel;
                                 //connections[client_socket_id].channel = channel
@@ -232,49 +211,37 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
                                         li.appendChild(tm)
                                         chat.appendChild(ul)
                                         chat.appendChild(br)
-
                                     }
-                                   
                                 }
-                                
                             }
-                            
-                        //Wait for their video stream
+                        
                         connections[client_socket_id].ontrack = function(event){
                             gotRemoteStream(event, client_socket_id)
                         }    
-                        //Add the local video stream
+                       
                         stream.getTracks().forEach(function(track) {
                             connections[client_socket_id].addTrack(track, stream);
                           });
                           
                     }
                 });
-
-                //Create an offer to connect with your local description
                 
                 if(count >= 2){
                     connections[id].createOffer().then(function(description){
                         connections[id].setLocalDescription(description).then(function() {
-                            // console.log(connections);
                             socket.emit('signal', id, JSON.stringify({'sdp': connections[id].localDescription}));
                         }).catch(e => console.log(e));        
                     });
                 }
             });          
         })    
-    })
-    // .catch(err => document.write(err));
-    .catch(err => alert(`Can not start the app due to this reason: ${err}`));
+    }).catch(err => alert(`Can not start the app due to this reason: ${err}`));
 
 function gotMessageFromServer(fromId, message) {
-
         //Parse the incoming signal
         var signal = JSON.parse(message)
-    
         //Make sure it's not coming from yourself
         if(fromId != socketId) {
-    
             if(signal.sdp){            
                 connections[fromId].setRemoteDescription(new RTCSessionDescription(signal.sdp)).then(function() {                
                     if(signal.sdp.type == 'offer') {
@@ -287,7 +254,6 @@ function gotMessageFromServer(fromId, message) {
                        /* connections[fromId].ondatachannel = function(event) {
                             let channel = event.channel;
                             connections[fromId].channel = channel
-                            
                               channel.onopen = function(event) {
                                   console.log('it is receive peer')
                               //channel.send('it is receive peer');
@@ -297,56 +263,39 @@ function gotMessageFromServer(fromId, message) {
                                 console.log(data)
                                 document.getElementById(`${data.id}`).style.filter = data.currentFilter;
                             }
-                            
                         }*/
-                      
                     }
                 }).catch(e => console.log(e));
             }
-        
             if(signal.ice) {
                 connections[fromId].addIceCandidate(new RTCIceCandidate(signal.ice)).catch(e => console.log(e));
             }                
         }
 }
 function gotRemoteStream(event, id) {
-
     if(stream_cnt==0){
-    enlargement_button =document.createElement('button');
-    enlargement_button.className ="icon alt fa-laptop";
-    
-    enlargement_button.addEventListener('click', (event) => {
-      document.getElementById(id).requestFullscreen();
-    })
-    
-    
+        enlargement_button =document.createElement('button');
+        enlargement_button.className ="icon alt fa-laptop";
+        enlargement_button.addEventListener('click', (event) => {
+        document.getElementById(id).requestFullscreen();
+        })
         video  = document.createElement('video'),
-    video.setAttribute('id', id);
-    div    = document.createElement('div')
-    div.className = `embed-responsive embed-responsive-16by9`
-    inboundStream = new MediaStream();
-    video.srcObject = inboundStream;
-    video.className='embed-responsive-item';
-    //video.muted       = true;
-    //video.playsinline = true;
-    
-    div.appendChild(video);      
-    div.appendChild(enlargement_button)
-    document.getElementById('peerVideo_list').appendChild(div);
-         
-    video.autoplay    = true;  
-    }
-   
-
-   
-        if (stream_cnt<2) {
-     
+        video.setAttribute('id', id);
+        div    = document.createElement('div')
+        div.className = `embed-responsive embed-responsive-16by9`
+        inboundStream = new MediaStream();
+        video.srcObject = inboundStream;
+        video.className='embed-responsive-item';
+        div.appendChild(video);      
+        div.appendChild(enlargement_button)
+        document.getElementById('peerVideo_list').appendChild(div);
+        video.autoplay    = true;  
+    } 
+    if (stream_cnt<2) {
         inboundStream.addTrack(event.track);
-        }
-        
+    }    
         stream_cnt++;
-    
-        if(stream_cnt == 2){
+    if(stream_cnt == 2){
         stream_cnt=0;
     }
 }
@@ -356,14 +305,12 @@ function SendData(data) {
     if (connection_ids.length>0) {
         connection_ids.forEach(function(connection_id){
             if(connection_id!=socketId){
-    console.log(connections[connection_id])
-
+            console.log(connections[connection_id])
             connections[connection_id].channel.send(JSON.stringify(data))
             }
         })
     }
 }
-
 // 권한없이 url을 통한 우회 접속 시 차단
 function checkSignIn() {
     if(!sessionStorage['accessToken']) {
