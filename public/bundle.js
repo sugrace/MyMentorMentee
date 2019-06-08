@@ -13,6 +13,9 @@ let inboundStream = null;
 let stream_cnt=0;
 let video;
 
+
+//const evaluation_button = document.getElementById('evaluation_button');
+
 var peerConnectionConfig = {
     'iceServers': [
         {'urls': 'stun:stun.services.mozilla.com'},
@@ -137,17 +140,64 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
             }
         })
         lock_button.addEventListener('click', event =>{
-        socket.emit('request_lock',document.location.hash)
+        socket.emit('request_lock', document.location.hash)
         })
 
+        var accessToken = JSON.parse(sessionStorage['accessToken']);
+        var masterName = accessToken.payload['cognito:username']
+
+        $('#submitEvaluate').click(function () {
+            var formData = $('#formEvaluate').serializeArray();
+            formData.push({name : "masterName" , value : masterName});
+            $.ajax({
+                url: 'http://localhost:5000/',
+                type: 'POST',
+                data: formData,
+                dataType: 'json',
+                success: function (data) {
+                    alert('전송이 완료되었습니다.');
+                    $('#exampleModalCenter').modal('hide');
+                },
+                error: function(xhr, status) {
+                    alert('전송이 완료되었습니다.');
+                    $('#exampleModalCenter').modal('hide');
+                }
+            })
+        });
+
+        $('#evaluation_button').click(function () {
+            socket.emit('open-evaluate', { roomId: document.location.hash });
+        });
+        
+        function request_evaluation(){
+            $('#exampleModalCenter').modal({
+                backdrop: 'static',
+                keyboard: false
+            });
+
+        }
 
         
-        socket = io()
+        socket = io('', {
+            transports: ['websocket']
+        })
 
         socket.on('signal', gotMessageFromServer);
         socket.on('connect', function(){
+            socket.on('master', function(isMaster) {
+                if (isMaster) {
+                    $('#evaluation_button').removeClass('hide');
+                }
+                
+            });
+
             socket.emit('token_number',call_token);
             socketId = socket.id;
+
+            socket.on('open-evaluate', function () {
+                request_evaluation();
+            });
+
             socket.on('user-exceeded',function(){
                 alert('user exceeded!')
             })
@@ -158,7 +208,8 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
                 // video.parentElement.parentElement.removeChild(parentDiv);
             });
             socket.on('user-joined', function(id, count, client_socket_ids){
-                console.log(id, count, client_socket_ids)
+                // console.log(id, count, client_socket_ids)
+                console.log(`count = ${count}`);
                 client_socket_ids.forEach(function(client_socket_id) {
                     if(!connections[client_socket_id]){
                         connections[client_socket_id] = new RTCPeerConnection(peerConnectionConfig);
@@ -246,6 +297,7 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
 
 function gotMessageFromServer(fromId, message, type) {
         //Make sure it's not coming from yourself
+        console.log('gotMessage');
     if(type == 'sdp'){
         if(fromId != socketId) {
             var signal = JSON.parse(message)

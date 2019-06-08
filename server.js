@@ -9,24 +9,62 @@ let https_server = https.createServer({
   },app);
 
 
-const io = require('socket.io')(https_server)
+const io = require('socket.io')(https_server, {
+    transports: ['websocket']
+})
 const port = process.env.PORT || 3000
 
 app.use(express.static(__dirname + "/public"))
 
+function isMaster(socket, RoomId) {
+    if(Rooms[RoomId]){
+        if(Rooms[RoomId][0] == socket.id){
+            return true;
+        }
+   }
+
+   return false;
+}
+
+function joinRoom(socket, RoomId) {
+    if (Rooms[RoomId] === undefined) {
+        Rooms[RoomId] = [];
+    }
+
+    if (!Rooms[RoomId].includes(socket.id)) {
+        Rooms[RoomId].push(socket.id);
+    }
+}
 
 io.on('connection', function (socket) {
+    socket.on('room-join', function (data) {
+        const { roomId } = data;
+        joinRoom(socket, roomId);
 
-   
+        console.log(`isMaster: ${isMaster(socket, roomId)}`);
+
+        if (isMaster(socket, roomId)) {
+            socket.emit('master', true);
+        }
+    });
+
     socket.on('token_number',function(token){
 
-        if(!Rooms[token]){
-            Rooms[token]=[socket.id]
-        }else{
-            Rooms[token].push(socket.id)
-        }
+        // if(!Rooms[token]){
+        //     Rooms[token]=[socket.id]
+        // }else{
+        //     Rooms[token].push(socket.id)
+        // }
+
+
+        joinRoom(socket, token);
         
-        console.log(Rooms)
+        console.log(Rooms);
+
+        if (isMaster(socket, token)) {
+            socket.emit('master', true);
+        }
+
         if(Rooms[token].length > 6){
                 io.to(socket.id).emit("user-exceeded")
         }else{
@@ -59,6 +97,20 @@ io.on('connection', function (socket) {
        }
        
     })
+
+    socket.on('open-evaluate', function(data) {
+        const { roomId } = data;
+
+       if (isMaster(socket, roomId)) {
+            Rooms[roomId].forEach(function(socketId, idx){
+                console.log(idx);
+                if (idx > 0) {
+                    io.to(socketId).emit("open-evaluate", true);
+                }              
+            })
+       }
+    });
+
 	socket.on('disconnect', function() {
         let MyRoom
         let token
@@ -83,7 +135,7 @@ io.on('connection', function (socket) {
      
 
 
-	})
+    })
 
 })
 

@@ -6,6 +6,19 @@
         <link rel="stylesheet" type="text/css" crossorigin="anonymous" href="https://meta-kage.kakaocdn.net/dn/osa/blog/assets/fonts/Kakao.css"/> 
         <link rel="stylesheet" href="assets/css/main.css" />
         <link rel="stylesheet" href="assets/css/chat.css" />
+        <style>
+            .hide {
+                display: none;
+            }
+
+            #evaluateTitle {
+                color: black;
+            }
+
+            #masterName {
+                color: black;
+            }
+        </style>
     </head>
     <body>
         <header id="header">
@@ -26,6 +39,9 @@
                                 </select>
                         </li>
 
+                        <li><a href="#">
+                            <button id="evaluation_button" class="hide">평가</button></a>
+                        </li>
                         <li><a href="#" >
                             <button id="lock_button" class="icon alt fa-unlock-alt">Lock</button></a>
                         </li>
@@ -73,6 +89,33 @@
                     <ul class="from_me"></ul>
             </div>
 
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="evaluateTitle">평가하기</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+                <form id="formEvaluate">
+                    <div class="form-group">
+                        <!--<label for="exampleFormControlTextarea1">평가</label> !-->
+                        <text class="form-control" id="masterName" name="masterName"></text>
+                        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name="str"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button id="submitEvaluate" class="btn btn-primary">제출</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
     	<!-- Scripts -->
 			<script src="assets/js/jquery.min.js"></script>
 			<script src="assets/js/jquery.scrolly.min.js"></script>
@@ -84,7 +127,13 @@
 			<script src="assets/js/main.js"></script>
             <script src="/socket.io/socket.io.js"></script>
             <script src="bundle.js"></script>
-    
+            <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/4.3.1/bootstrap.min.js"></script>
+            <script>
+                var accessToken = JSON.parse(sessionStorage['accessToken']);
+                var Username = accessToken.payload['cognito:username']
+                document.getElementById("masterName").innerHTML = Username + '의 강의는...';
+            </script>
+
 
     </body>
 
