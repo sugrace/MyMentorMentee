@@ -8,16 +8,12 @@ let https_server = https.createServer({
     cert:fs.readFileSync("my-cert.pem")
   },app);
 
-
 const io = require('socket.io')(https_server)
 const port = process.env.PORT || 3000
 
 app.use(express.static(__dirname + "/public"))
 
-
 io.on('connection', function (socket) {
-
-   
     socket.on('token_number',function(token){
 
         if(!Rooms[token]){
