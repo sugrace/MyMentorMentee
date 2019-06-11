@@ -1,17 +1,18 @@
 <html>
     <head>
-        <title>MyMentorMentee</title>
+        <title>My Mentor Mentee</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" crossorigin="anonymous" href="https://meta-kage.kakaocdn.net/dn/osa/blog/assets/fonts/Kakao.css"/> 
         <link rel="stylesheet" href="assets/css/main.css" />
         <link rel="stylesheet" href="assets/css/chat.css" />
     </head>
-    <body>
+    <body onload="renderUsername()">
         <header id="header">
                 <h1 id="logo">M3</a></h1>
                 <nav id="nav">
                     <ul class="icons">
+                        <li id="username">'s session</li>
                         <li><a href="#" class="icon alt fa-number"><span class="label">RoomNumber</span></a></li>
                         <li>
                                 <select id="filter" class="icon alt fa-folder-open-o">
@@ -84,6 +85,12 @@
 			<script src="assets/js/main.js"></script>
             <script src="/socket.io/socket.io.js"></script>
             <script src="bundle.js"></script>
+            <script>
+                function renderUsername() {
+                    var accessToken = JSON.parse(sessionStorage['accessToken']);
+					document.getElementById('username').innerHTML = accessToken.payload['cognito:username'] + `'s session`;
+                }
+            </script>
     
 
     </body>

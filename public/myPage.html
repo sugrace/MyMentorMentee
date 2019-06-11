@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <link rel="stylesheet" href="assets/css/mypage.css" />
+    <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.7.16.min.js"></script>
+    <script src="assets/js/amazon-dynamoDB-access.js"></script>
+    <script src="assets/js/signUp.js"></script>
+    <script src="assets/js/myPage.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <title>My Mentor Mentee | My Page</title>
+</head>
+<body class="is-preload" onload="startPage()">
+        <div id="page-wrapper">
+
+            <!-- Header -->
+                <header id="header">
+                    <h1 id="logo"><a href="index.html">My Mentor Mentee</a></h1>
+                    <nav id="nav">
+                        <ul id="myNav">
+                            <li><a href="index.html">Home</a></li>
+                            <li>
+                                <a href="#">Mentoring</a>
+                                <ul>
+                                    <li><a href="section_subject.html">Section & Subject</a></li>
+                                    <li><a href="mentor.html">Mentor</a></li>
+                                    <li><a href="apply.html">Apply</a></li>
+                                
+                                </ul>
+                            </li>
+                            <li><a href="groupstudy.html">Group Study</a>
+                                <ul>
+                                    <li><a href="#">College lecture study</a></li>
+                                    <li><a href="#">Language skill study</a></li>
+                                    <li><a href="#">Algorithm study</a></li>
+                                    <li><a href="#">Employment study</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="boards.html">Boards</a></li>
+                            <!-- <li><a href="mypage.html">My Page</a></li>
+                            <li><a href="signup.html" class="button primary"> Sign Up</a></li>
+                            <li><a href="login.html" class="button primary">Sign In</a></li> -->
+                        
+                        </ul>
+                    </nav>
+                </header>
+
+            <!-- Main -->
+            <div class="container">
+                    <div class="row">
+                        
+                       <div class="col-md-7 ">
+                
+                <div class="panel panel-default">
+                  <div class="panel-heading">  <h4 >User Profile</h4></div>
+                   <div class="panel-body">
+                       
+                    <div class="box box-info">
+                        
+                            <div class="box-body">
+                                     <div class="col-sm-6">
+                                     <div  align="center"> <img alt="User Pic" src="https://x1.xingassets.com/assets/frontend_minified/img/users/nobody_m.original.jpg" id="profile-image1" class="img-circle img-responsive"> 
+                                
+                                <input id="profile-image-upload" class="hidden" type="file">
+                <div style="color:#999;" >click here to change profile image</div>
+                                <!--Upload Image Js And Css-->
+
+                                     </div>
+                              
+                              <br>
+                    
+                              <!-- /input-group -->
+                            </div>
+                            <div class="col-sm-6">
+                            <h4 style="color:#00b1b1;" id="username"> userid </h4></span>
+                              <span><p id="useryear"> student</p></span>            
+                            </div>
+                            <div class="clearfix"></div>
+                            <hr style="margin:5px 0 5px 0;">
+                    
+                              
+                <div class="col-sm-5 col-xs-6 tital " >First Name:</div><div class="col-sm-7 col-xs-6 ">1</div>
+                     <div class="clearfix"></div>
+                <div class="bot-border"></div>
+                
+                <div class="col-sm-5 col-xs-6 tital " >Last Name:</div><div class="col-sm-7"> 2</div>
+                  <div class="clearfix"></div>
+                <div class="bot-border"></div>
+
+                <div class="col-sm-5 col-xs-6 tital " >Email:</div><div class="col-sm-7" id="useremail"> usermail</div>
+                <div class="clearfix"></div>
+              <div class="bot-border"></div>
+                
+                <div class="col-sm-5 col-xs-6 tital " >Date Of Joining:</div><div class="col-sm-7">11 Jun 2019</div>
+                
+                  <div class="clearfix"></div>
+                <div class="bot-border"></div>
+                
+                <div class="col-sm-5 col-xs-6 tital " >Nationality:</div><div class="col-sm-7">Korean</div>
+                
+                 <div class="clearfix"></div>
+                <div class="bot-border"></div>
+                
+                <div class="col-sm-5 col-xs-6 tital " >Grade:</div><div class="col-sm-7" id="usergrade"></div>
+                
+                
+                            <!-- /.box-body -->
+                          </div>
+                          <!-- /.box -->
+                
+                        </div>
+                       
+                            
+                    </div> 
+                    </div>
+                </div>  
+                    <script>
+                    $(function() {
+                        $('#profile-image1').on('click', function() {
+                            $('#profile-image-upload').click();
+                        });
+                    });       
+                    </script> 
+                   </div>
+                </div>
+
+            <!-- Footer -->
+                <footer id="footer">
+                    <ul class="icons">
+                        <li><a href="#" class="icon alt fa-twitter"><span class="label">Twitter</span></a></li>
+                        <li><a href="#" class="icon alt fa-facebook"><span class="label">Facebook</span></a></li>
+                        <li><a href="#" class="icon alt fa-linkedin"><span class="label">LinkedIn</span></a></li>
+                        <li><a href="#" class="icon alt fa-instagram"><span class="label">Instagram</span></a></li>
+                        <li><a href="#" class="icon alt fa-github"><span class="label">GitHub</span></a></li>
+                        <li><a href="#" class="icon alt fa-envelope"><span class="label">Email</span></a></li>
+                    </ul>
+                    <ul class="copyright">
+                        <li>&copy; Untitled. All rights reserved.</li><li>Konkuk univ. Computer Science. team TEMP.</a></li>
+                    </ul>
+                </footer>
+
+        </div>
+
+        <!-- Scripts -->
+            <script src="assets/js/jquery.min.js"></script>
+            <script src="assets/js/jquery.scrolly.min.js"></script>
+            <script src="assets/js/jquery.dropotron.min.js"></script>
+            <script src="assets/js/jquery.scrollex.min.js"></script>
+            <script src="assets/js/browser.min.js"></script>
+            <script src="assets/js/breakpoints.min.js"></script>
+            <script src="assets/js/util.js"></script>
+            <script src="assets/js/main.js"></script>
+
+</body>
+</html>
