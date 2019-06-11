@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>MyMentorMentee</title>
+        <title>My Mentor Mentee</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" crossorigin="anonymous" href="https://meta-kage.kakaocdn.net/dn/osa/blog/assets/fonts/Kakao.css"/> 
@@ -20,11 +20,12 @@
             }
         </style>
     </head>
-    <body>
+    <body onload="renderUsername()">
         <header id="header">
                 <h1 id="logo">M3</a></h1>
                 <nav id="nav">
                     <ul class="icons">
+                        <li id="username">'s session</li>
                         <li><a href="#" class="icon alt fa-number"><span class="label">RoomNumber</span></a></li>
                         <li>
                                 <select id="filter" class="icon alt fa-folder-open-o">
@@ -129,12 +130,17 @@
             <script src="bundle.js"></script>
             <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/4.3.1/bootstrap.min.js"></script>
             <script>
-                var accessToken = JSON.parse(sessionStorage['accessToken']);
-                var Username = accessToken.payload['cognito:username']
+                var accessToken2 = JSON.parse(sessionStorage['accessToken']);
+                var Username = accessToken2.payload['cognito:username']
                 document.getElementById("masterName").innerHTML = Username + '의 강의는...';
             </script>
 
-
+            <script>
+                function renderUsername() {
+                    var accessToken = JSON.parse(sessionStorage['accessToken']);
+					document.getElementById('username').innerHTML = accessToken.payload['cognito:username'] + `'s session`;
+                }
+            </script>
     </body>
 
 </html>

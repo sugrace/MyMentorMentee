@@ -8,10 +8,8 @@ let https_server = https.createServer({
     cert:fs.readFileSync("my-cert.pem")
   },app);
 
+const io = require('socket.io')(https_server)
 
-const io = require('socket.io')(https_server, {
-    transports: ['websocket']
-})
 const port = process.env.PORT || 3000
 
 app.use(express.static(__dirname + "/public"))
@@ -37,11 +35,7 @@ function joinRoom(socket, RoomId) {
 }
 
 io.on('connection', function (socket) {
-    socket.on('room-join', function (data) {
-        const { roomId } = data;
-        joinRoom(socket, roomId);
-
-        console.log(`isMaster: ${isMaster(socket, roomId)}`);
+    socket.on('token_number',function(token){
 
         if (isMaster(socket, roomId)) {
             socket.emit('master', true);
