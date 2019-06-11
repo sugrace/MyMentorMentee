@@ -35,8 +35,7 @@
 								</ul>
 							</li>
 							<li><a href="boards.html">Boards</a></li>
-							<li><a href="mypage.html">My Page</a></li>
-							
+							<!-- <li><a href="mypage.html">My Page</a></li> -->
 							<!-- <li><a href="signup.html" class="button primary">Sign Up</a></li>
 							<li><a href="login.html" class="button primary">Sign In</a></li> -->
 						</ul>
@@ -214,6 +213,7 @@
 						document.getElementById('myNav').innerHTML += '<li><a href="login.html" class="button primary">Sign In</a></li>';
 					} else {
 						var accessToken = JSON.parse(sessionStorage['accessToken']);
+						document.getElementById('myNav').innerHTML += '<li><a href="mypage.html">My Page</a></li>';
 						document.getElementById('myNav').innerHTML += '<li>'+ accessToken.payload['cognito:username'] +'</li>';
 						document.getElementById('myNav').innerHTML += '<li><a href="login.html" class="button primary" onclick="signOut()">Sign out</a></li>';
 					}
