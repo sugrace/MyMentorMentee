@@ -12,6 +12,12 @@ let inboundStream = null;
 let stream_cnt=0;
 let video;
 
+
+const masterName_title = document.getElementById('username');
+const masterName_val = document.getElementById('masterName');
+let masterName;
+let accessToken_master;
+
 var peerConnectionConfig = {
     'iceServers': [
         {'urls': 'stun:stun.services.mozilla.com'},
@@ -25,6 +31,8 @@ let token;
 let call_token;
 
 //checkSignIn();
+
+
 
 if (document.location.hash === "" || document.location.hash === undefined) { 
 
@@ -139,14 +147,50 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         socket.emit('request_lock',document.location.hash)
         })
 
+        $('#evaluation_button').click(function () {
+            socket.emit('open-evaluate', { roomId: document.location.hash });
+        });
+        
+        function request_evaluation(masterName){
+            masterName_val.innerHTML = masterName + '님의 수업은...';
+            $('#exampleModalCenter').modal({
+                backdrop: 'static',
+                keyboard: false
+            });
 
+        }
         
         socket = io()
 
+        
+
         socket.on('signal', gotMessageFromServer);
         socket.on('connect', function(){
+
             socket.emit('token_number',call_token);
             socketId = socket.id;
+
+            socket.on('master', function(isMaster) {
+
+                if (isMaster) {
+                    $('#evaluation_button').removeClass('hide');
+                    accessToken_master = JSON.parse(sessionStorage['accessToken']);
+                    masterName = accessToken_master.payload['cognito:username']
+                    
+                    socket.emit('mastername',masterName);
+                    // console.log("i'm master");
+                }
+                else {
+                    //masterName_title.innerHTML = masterName + `'s session`;
+                    // console.log("not master");
+                }
+            });
+
+            socket.on('open-evaluate', function (data) {
+                //masterName_val.innerHTML = masterName + '님의 강의는...'
+                request_evaluation(data);
+            });
+
             socket.on('user-exceeded',function(){
                 alert('user exceeded!')
             })
@@ -156,8 +200,9 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
                 // var parentDiv = video.parentElement;
                 // video.parentElement.parentElement.removeChild(parentDiv);
             });
-            socket.on('user-joined', function(id, count, client_socket_ids){
-                console.log(id, count, client_socket_ids)
+            socket.on('user-joined', function(id, count, client_socket_ids,masterName){
+                masterName_title.innerHTML = masterName + `'s session`;
+                console.log(id, count, client_socket_ids, masterName)
                 client_socket_ids.forEach(function(client_socket_id) {
                     if(!connections[client_socket_id]){
                         connections[client_socket_id] = new RTCPeerConnection(peerConnectionConfig);
@@ -239,8 +284,55 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
                         }).catch(e => console.log(e));        
                     });
                 }
-            });          
-        })    
+
+                
+                $('#submitEvaluate').click(function () {
+                    var formData = $('#formEvaluate').serializeArray();
+                    formData.push({name : "masterName" , value : masterName});
+                    $.ajax({
+                        url: 'https://13.124.228.145:5000/',
+                        type: 'POST',
+                        data: formData,
+                        dataType: 'json',
+                        success: function (data) {
+                            alert('전송이 완료되었습니다.');
+                            $('#exampleModalCenter').modal('hide');
+                        },
+                        error: function(xhr, status) {
+                            alert('전송이 완료되었습니다.');
+                            $('#exampleModalCenter').modal('hide');
+                        }
+                    })
+                 });
+            });
+              
+        })
+
+        var accessToken = JSON.parse(sessionStorage['accessToken']);
+        
+        if (typeof accessToken == "undefined" || accessToken == null) {
+            alert('cognito accessToken is not defined!!!');
+        }
+
+        // $('#submitEvaluate').click(function () {
+        //     var formData = $('#formEvaluate').serializeArray();
+        //     formData.push({name : "masterName" , value : masterName});
+        //     $.ajax({
+        //         url: 'https://13.124.228.145:5000/',
+        //         type: 'POST',
+        //         data: formData,
+        //         dataType: 'json',
+        //         success: function (data) {
+        //             alert('전송이 완료되었습니다.');
+        //             $('#exampleModalCenter').modal('hide');
+        //         },
+        //         error: function(xhr, status) {
+        //             alert('전송이 완료되었습니다.');
+        //             $('#exampleModalCenter').modal('hide');
+        //         }
+        //     })
+        // });
+
     }).catch(err => alert(`Can not start the app due to this reason: ${err}`));
 
 function gotMessageFromServer(fromId, message, type) {
@@ -336,3 +428,22 @@ function checkSignIn() {
         //
     }
 }
+
+// function checkMaster(bool) {
+//     if(bool) {
+//         return new Promise(function(resolve){
+//             accessToken_master = JSON.parse(sessionStorage['accessToken']);
+//             masterName = accessToken_master.payload['cognito:username']
+//             resolve(masterName);
+//         });
+//     }
+//     else {
+//         return new Promise(function(resolve) {
+//             //accessToken_master = JSON.parse(sessionStorage['accessToken']);
+//             //masterName = accessToken_master.payload['cognito:username']
+//             console.log("not master");
+//             resolve(masterName);
+//         });
+//     }
+// }
+

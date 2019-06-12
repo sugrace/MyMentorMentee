@@ -8,6 +8,8 @@ let https_server = https.createServer({
     cert:fs.readFileSync("my-cert.pem")
   },app);
 
+let masterName;
+
 const io = require('socket.io')(https_server)
 
 const port = process.env.PORT || 3000
@@ -15,10 +17,12 @@ const port = process.env.PORT || 3000
 app.use(express.static(__dirname + "/public"))
 
 function isMaster(socket, RoomId) {
+    
     if(Rooms[RoomId]){
         if(Rooms[RoomId][0] == socket.id){
             return true;
         }
+        else return false;
    }
 
    return false;
@@ -35,12 +39,6 @@ function joinRoom(socket, RoomId) {
 }
 
 io.on('connection', function (socket) {
-    socket.on('token_number',function(token){
-
-        if (isMaster(socket, roomId)) {
-            socket.emit('master', true);
-        }
-    });
 
     socket.on('token_number',function(token){
 
@@ -58,12 +56,15 @@ io.on('connection', function (socket) {
         if (isMaster(socket, token)) {
             socket.emit('master', true);
         }
+        else{
+            socket.emit('master',false);
+        }
 
         if(Rooms[token].length > 6){
                 io.to(socket.id).emit("user-exceeded")
         }else{
             Rooms[token].forEach(function(SocketId){
-                io.to(SocketId).emit("user-joined", socket.id, Rooms[token].length,Rooms[token])
+                io.to(SocketId).emit("user-joined", socket.id, Rooms[token].length,Rooms[token],masterName)
             })
         }
      
@@ -97,9 +98,9 @@ io.on('connection', function (socket) {
 
        if (isMaster(socket, roomId)) {
             Rooms[roomId].forEach(function(socketId, idx){
-                console.log(idx);
+                //console.log(idx);
                 if (idx > 0) {
-                    io.to(socketId).emit("open-evaluate", true);
+                    io.to(socketId).emit("open-evaluate", masterName);
                 }              
             })
        }
@@ -130,6 +131,10 @@ io.on('connection', function (socket) {
 
 
     })
+
+    socket.on('mastername',function(data){
+        masterName = data;
+    });
 
 })
 

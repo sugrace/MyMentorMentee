@@ -20,7 +20,7 @@
             }
         </style>
     </head>
-    <body onload="renderUsername()">
+    <body>
         <header id="header">
                 <h1 id="logo">M3</a></h1>
                 <nav id="nav">
@@ -130,17 +130,18 @@
             <script src="bundle.js"></script>
             <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/4.3.1/bootstrap.min.js"></script>
             <script>
-                var accessToken2 = JSON.parse(sessionStorage['accessToken']);
-                var Username = accessToken2.payload['cognito:username']
-                document.getElementById("masterName").innerHTML = Username + '의 강의는...';
+                //var accessToken2 = JSON.parse(sessionStorage['accessToken']);
+                //var Username = accessToken2.payload['cognito:username']
+                //document.getElementById("masterName").innerHTML = Username + '의 강의는...';
             </script>
 
-            <script>
+            <!--<script>
                 function renderUsername() {
                     var accessToken = JSON.parse(sessionStorage['accessToken']);
 					document.getElementById('username').innerHTML = accessToken.payload['cognito:username'] + `'s session`;
                 }
             </script>
+            !-->
     </body>
 
 </html>
