@@ -176,18 +176,13 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
                     $('#evaluation_button').removeClass('hide');
                     accessToken_master = JSON.parse(sessionStorage['accessToken']);
                     masterName = accessToken_master.payload['cognito:username']
-                    
+                    masterName_title.innerHTML = masterName + `'s session`;
                     socket.emit('mastername',masterName);
                     // console.log("i'm master");
-                }
-                else {
-                    //masterName_title.innerHTML = masterName + `'s session`;
-                    // console.log("not master");
                 }
             });
 
             socket.on('open-evaluate', function (data) {
-                //masterName_val.innerHTML = masterName + '님의 강의는...'
                 request_evaluation(data);
             });
 
@@ -201,7 +196,9 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
                 // video.parentElement.parentElement.removeChild(parentDiv);
             });
             socket.on('user-joined', function(id, count, client_socket_ids,masterName){
-                masterName_title.innerHTML = masterName + `'s session`;
+                if(masterName != null) {
+                    masterName_title.innerHTML = masterName + `'s session`;
+                }
                 console.log(id, count, client_socket_ids, masterName)
                 client_socket_ids.forEach(function(client_socket_id) {
                     if(!connections[client_socket_id]){
@@ -290,6 +287,7 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
                     var formData = $('#formEvaluate').serializeArray();
                     formData.push({name : "masterName" , value : masterName});
                     $.ajax({
+                        crossOrigin: true,
                         url: 'https://13.124.228.145:5000/',
                         type: 'POST',
                         data: formData,
@@ -315,23 +313,6 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         }
 
         // $('#submitEvaluate').click(function () {
-        //     var formData = $('#formEvaluate').serializeArray();
-        //     formData.push({name : "masterName" , value : masterName});
-        //     $.ajax({
-        //         url: 'https://13.124.228.145:5000/',
-        //         type: 'POST',
-        //         data: formData,
-        //         dataType: 'json',
-        //         success: function (data) {
-        //             alert('전송이 완료되었습니다.');
-        //             $('#exampleModalCenter').modal('hide');
-        //         },
-        //         error: function(xhr, status) {
-        //             alert('전송이 완료되었습니다.');
-        //             $('#exampleModalCenter').modal('hide');
-        //         }
-        //     })
-        // });
 
     }).catch(err => alert(`Can not start the app due to this reason: ${err}`));
 
@@ -428,22 +409,4 @@ function checkSignIn() {
         //
     }
 }
-
-// function checkMaster(bool) {
-//     if(bool) {
-//         return new Promise(function(resolve){
-//             accessToken_master = JSON.parse(sessionStorage['accessToken']);
-//             masterName = accessToken_master.payload['cognito:username']
-//             resolve(masterName);
-//         });
-//     }
-//     else {
-//         return new Promise(function(resolve) {
-//             //accessToken_master = JSON.parse(sessionStorage['accessToken']);
-//             //masterName = accessToken_master.payload['cognito:username']
-//             console.log("not master");
-//             resolve(masterName);
-//         });
-//     }
-// }
 
