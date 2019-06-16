@@ -8,26 +8,63 @@ let https_server = https.createServer({
     cert:fs.readFileSync("my-cert.pem")
   },app);
 
+let masterName;
+
 const io = require('socket.io')(https_server)
+
 const port = process.env.PORT || 3000
 
 app.use(express.static(__dirname + "/public"))
 
+function isMaster(socket, RoomId) {
+    
+    if(Rooms[RoomId]){
+        if(Rooms[RoomId][0] == socket.id){
+            return true;
+        }
+        else return false;
+   }
+
+   return false;
+}
+
+function joinRoom(socket, RoomId) {
+    if (Rooms[RoomId] === undefined) {
+        Rooms[RoomId] = [];
+    }
+
+    if (!Rooms[RoomId].includes(socket.id)) {
+        Rooms[RoomId].push(socket.id);
+    }
+}
+
 io.on('connection', function (socket) {
+
     socket.on('token_number',function(token){
 
-        if(!Rooms[token]){
-            Rooms[token]=[socket.id]
-        }else{
-            Rooms[token].push(socket.id)
-        }
+        // if(!Rooms[token]){
+        //     Rooms[token]=[socket.id]
+        // }else{
+        //     Rooms[token].push(socket.id)
+        // }
+
+
+        joinRoom(socket, token);
         
-        console.log(Rooms)
+        console.log(Rooms);
+
+        if (isMaster(socket, token)) {
+            socket.emit('master', true);
+        }
+        else{
+            socket.emit('master',false);
+        }
+
         if(Rooms[token].length > 6){
                 io.to(socket.id).emit("user-exceeded")
         }else{
             Rooms[token].forEach(function(SocketId){
-                io.to(SocketId).emit("user-joined", socket.id, Rooms[token].length,Rooms[token])
+                io.to(SocketId).emit("user-joined", socket.id, Rooms[token].length,Rooms[token],masterName)
             })
         }
      
@@ -55,6 +92,20 @@ io.on('connection', function (socket) {
        }
        
     })
+
+    socket.on('open-evaluate', function(data) {
+        const { roomId } = data;
+
+       if (isMaster(socket, roomId)) {
+            Rooms[roomId].forEach(function(socketId, idx){
+                //console.log(idx);
+                if (idx > 0) {
+                    io.to(socketId).emit("open-evaluate", masterName);
+                }              
+            })
+       }
+    });
+
 	socket.on('disconnect', function() {
         let MyRoom
         let token
@@ -79,7 +130,11 @@ io.on('connection', function (socket) {
      
 
 
-	})
+    })
+
+    socket.on('mastername',function(data){
+        masterName = data;
+    });
 
 })
 

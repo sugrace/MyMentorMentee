@@ -232,6 +232,7 @@
 					} else {
 						var accessToken = JSON.parse(sessionStorage['accessToken']);
 						// username을 이 함수로 전달하거나, Room.html 내에서 sessionStorage를 통해 username을 획득해도 된다.
+						//masterName = accessToken.payload['cognito:username'];
 						document.location.assign('Room.html');
 					}
 				}
