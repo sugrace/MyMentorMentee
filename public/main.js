@@ -12,7 +12,7 @@ let inboundStream = null;
 let stream_cnt=0;
 let video;
 let myname = '';
-
+let mymasterName;
 const masterName_title = document.getElementById('username');
 const masterName_val = document.getElementById('masterName');
 let masterName;
@@ -186,6 +186,7 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
                 // video.parentElement.parentElement.removeChild(parentDiv);
             });
             socket.on('user-joined', function(id, count, client_socket_ids, masterName){
+                mymasterName = masterName
                 if(masterName == myname) {
                     document.getElementById('evaluation_button').hidden = false;
                 }else {
@@ -294,7 +295,7 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
                 
     $('#submitEvaluate').click(function () {
         var formData = $('#formEvaluate').serializeArray();
-        formData.push({name : "masterName" , value : masterName});
+        formData.push({name : "masterName" , value : mymasterName});
         $.ajax({
             url: 'https://15.164.19.240:5000/',
             type: 'POST',
