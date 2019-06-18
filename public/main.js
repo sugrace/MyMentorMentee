@@ -22,6 +22,13 @@ var peerConnectionConfig = {
     'iceServers': [
         {'urls': 'stun:stun.services.mozilla.com'},
         {'urls': 'stun:stun.l.google.com:19302'},
+        {
+            "urls": [
+            "turn:13.250.13.83:3478?transport=udp"
+            ],
+            "username": "YzYNCouZM1mhqhmseWk6",
+            "credential": "YzYNCouZM1mhqhmseWk6"
+            }
     ]
 };
 let localStream;
@@ -288,7 +295,7 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
                     formData.push({name : "masterName" , value : masterName});
                     $.ajax({
                         crossOrigin: true,
-                        url: 'https://13.124.228.145:5000/',
+                        url: 'https://15.164.19.240:5000/',
                         type: 'POST',
                         data: formData,
                         dataType: 'json',
@@ -369,6 +376,7 @@ function gotRemoteStream(event, id) {
         })
         video  = document.createElement('video'),
         video.setAttribute('id', id);
+        video.setAttribute('playsinline',true);
         div    = document.createElement('div')
         div.className = `embed-responsive embed-responsive-16by9`
         inboundStream = new MediaStream();
