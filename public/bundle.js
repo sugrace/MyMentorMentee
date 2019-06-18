@@ -289,7 +289,7 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
                     formData.push({name : "masterName" , value : masterName});
                     $.ajax({
                         crossOrigin: true,
-                        url: 'https://13.125.227.153:5000/',
+                        url: 'https://15.164.19.240:5000/',
                         type: 'POST',
                         data: formData,
                         dataType: 'json',
