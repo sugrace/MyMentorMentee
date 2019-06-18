@@ -100,7 +100,7 @@ io.on('connection', function (socket) {
             Rooms[roomId].forEach(function(socketId, idx){
                 //console.log(idx);
                 if (idx > 0) {
-                    io.to(socketId).emit("open-evaluate", masterName);
+                    io.to(socketId).emit("open-evaluate", master[roomId]);
                 }              
             })
        }
