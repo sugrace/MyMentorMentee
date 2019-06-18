@@ -12,7 +12,7 @@ let connections = [];
 let inboundStream = null;
 let stream_cnt=0;
 let video;
-
+let myname = '';
 
 const masterName_title = document.getElementById('username');
 const masterName_val = document.getElementById('masterName');
@@ -174,21 +174,12 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
 
         socket.on('signal', gotMessageFromServer);
         socket.on('connect', function(){
-
-            socket.emit('token_number',call_token);
+            if(sessionStorage['accessToken']!=undefined){
+                let accessToken = JSON.parse(sessionStorage['accessToken']);
+                myname  = accessToken.payload['cognito:username'];
+            }
+            socket.emit('token_number',call_token, myname);
             socketId = socket.id;
-
-            socket.on('master', function(isMaster) {
-
-                if (isMaster) {
-                    $('#evaluation_button').removeClass('hide');
-                    accessToken_master = JSON.parse(sessionStorage['accessToken']);
-                    masterName = accessToken_master.payload['cognito:username']
-                    masterName_title.innerHTML = masterName + `'s session`;
-                    socket.emit('mastername',masterName);
-                    // console.log("i'm master");
-                }
-            });
 
             socket.on('open-evaluate', function (data) {
                 request_evaluation(data);
@@ -204,9 +195,10 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
                 // video.parentElement.parentElement.removeChild(parentDiv);
             });
             socket.on('user-joined', function(id, count, client_socket_ids,masterName){
-                if(masterName != null) {
-                    masterName_title.innerHTML = masterName + `'s session`;
+                if(masterName != myname) {
+                    $('#evaluation_button').removeClass('hide');
                 }
+                masterName_title.innerHTML = masterName + `'s session`;
                 console.log(id, count, client_socket_ids, masterName)
                 client_socket_ids.forEach(function(client_socket_id) {
                     if(!connections[client_socket_id]){

@@ -3,6 +3,7 @@ const app = express();
 const https = require('https');
 const fs = require('fs');
 let Rooms = {};
+let master ={};
 let https_server = https.createServer({
     key:fs.readFileSync("my-key.pem"),
     cert:fs.readFileSync("my-cert.pem")
@@ -36,11 +37,13 @@ function joinRoom(socket, RoomId) {
     if (!Rooms[RoomId].includes(socket.id)) {
         Rooms[RoomId].push(socket.id);
     }
+   
+
 }
 
 io.on('connection', function (socket) {
 
-    socket.on('token_number',function(token){
+    socket.on('token_number',function(token,username){
 
         // if(!Rooms[token]){
         //     Rooms[token]=[socket.id]
@@ -50,21 +53,18 @@ io.on('connection', function (socket) {
 
 
         joinRoom(socket, token);
-        
+        if(Rooms[RoomId].length == 1 ){
+            master[RoomId] = username;
+        }
         console.log(Rooms);
 
-        if (isMaster(socket, token)) {
-            socket.emit('master', true);
-        }
-        else{
-            socket.emit('master',false);
-        }
-
+     
+        
         if(Rooms[token].length > 6){
                 io.to(socket.id).emit("user-exceeded")
         }else{
             Rooms[token].forEach(function(SocketId){
-                io.to(SocketId).emit("user-joined", socket.id, Rooms[token].length,Rooms[token],masterName)
+                io.to(SocketId).emit("user-joined", socket.id, Rooms[token].length,Rooms[token], master[RoomId] )
             })
         }
      
@@ -132,9 +132,6 @@ io.on('connection', function (socket) {
 
     })
 
-    socket.on('mastername',function(data){
-        masterName = data;
-    });
 
 })
 
