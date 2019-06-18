@@ -53,8 +53,8 @@ io.on('connection', function (socket) {
 
 
         joinRoom(socket, token);
-        if(Rooms[RoomId].length == 1 ){
-            master[RoomId] = username;
+        if(Rooms[token].length == 1 ){
+            master[token] = username;
         }
         console.log(Rooms);
 
