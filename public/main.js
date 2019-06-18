@@ -193,9 +193,12 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
                 // var parentDiv = video.parentElement;
                 // video.parentElement.parentElement.removeChild(parentDiv);
             });
-            socket.on('user-joined', function(id, count, client_socket_ids,masterName){
+            socket.on('user-joined', function(id, count, client_socket_ids, masterName){
                 if(masterName == myname) {
-                    $('#evaluation_button').removeClass('hide');
+                    document.getElementById('evaluation_button').hidden = false;
+                }else {
+                    document.getElementById('evaluation_button').hidden = true ;
+                    
                 }
                 masterName_title.innerHTML = masterName + `'s session`;
                 console.log(id, count, client_socket_ids, masterName)
