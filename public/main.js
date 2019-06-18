@@ -157,15 +157,7 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         $('#evaluation_button').click(function () {
             socket.emit('open-evaluate', { roomId: document.location.hash });
         });
-        
-        function request_evaluation(masterName){
-            masterName_val.innerHTML = masterName + '님의 수업은...';
-            $('#exampleModalCenter').modal({
-                backdrop: 'static',
-                keyboard: false
-            });
-
-        }
+      
         
         socket = io()
 
@@ -284,26 +276,6 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
                     });
                 }
 
-                
-                $('#submitEvaluate').click(function () {
-                    var formData = $('#formEvaluate').serializeArray();
-                    formData.push({name : "masterName" , value : masterName});
-                    $.ajax({
-                        crossOrigin: true,
-                        url: 'https://15.164.19.240:5000/',
-                        type: 'POST',
-                        data: formData,
-                        dataType: 'json',
-                        success: function (data) {
-                            alert('전송이 완료되었습니다.');
-                            $('#exampleModalCenter').modal('hide');
-                        },
-                        error: function(xhr, status) {
-                            alert('전송이 완료되었습니다.');
-                            $('#exampleModalCenter').modal('hide');
-                        }
-                    })
-                 });
             });
               
         })
@@ -314,10 +286,39 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
             alert('cognito accessToken is not defined!!!');
         }
 
-        // $('#submitEvaluate').click(function () {
 
     }).catch(err => alert(`Can not start the app due to this reason: ${err}`));
 
+
+
+                
+    $('#submitEvaluate').click(function () {
+        var formData = $('#formEvaluate').serializeArray();
+        formData.push({name : "masterName" , value : masterName});
+        $.ajax({
+            url: 'https://15.164.19.240:5000/',
+            type: 'POST',
+            data: formData,
+            dataType: 'json',
+            success: function (data) {
+                alert('전송이 완료되었습니다.');
+                $('#exampleModalCenter').modal('hide');
+            },
+            error: function(xhr, status) {
+                alert('전송이 완료되었습니다.');
+                $('#exampleModalCenter').modal('hide');
+            }
+        })
+     });
+
+function request_evaluation(masterName){
+        masterName_val.innerHTML = masterName + '님의 수업은...';
+        $('#exampleModalCenter').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+
+    }
 function gotMessageFromServer(fromId, message, type) {
         //Make sure it's not coming from yourself
     if(type == 'sdp'){
