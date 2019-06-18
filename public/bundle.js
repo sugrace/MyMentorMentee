@@ -195,7 +195,7 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
                 // video.parentElement.parentElement.removeChild(parentDiv);
             });
             socket.on('user-joined', function(id, count, client_socket_ids,masterName){
-                if(masterName != myname) {
+                if(masterName == myname) {
                     $('#evaluation_button').removeClass('hide');
                 }
                 masterName_title.innerHTML = masterName + `'s session`;
