@@ -243,6 +243,7 @@
 					if(!sessionStorage['accessToken']) {
 						alert("First, sign in to use the service!");
 						alert("Otherwise, you will be anonymous and will not be able to request an evaluation.")
+						document.location.assign(`Room.html#${roomNumber}`);
 					} else {
 						var roomNumber = roomParam;
 						var accessToken = JSON.parse(sessionStorage['accessToken']);
