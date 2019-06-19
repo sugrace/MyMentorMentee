@@ -13,12 +13,11 @@ let inboundStream = null;
 let stream_cnt=0;
 let video;
 let myname = '';
-let mymasterName;
+let mymasterName ;
 const masterName_title = document.getElementById('username');
 const masterName_val = document.getElementById('masterName');
-let masterName;
 let accessToken_master;
-
+let currentFilter;
 var peerConnectionConfig = {
     'iceServers': [
         {'urls': 'stun:stun.services.mozilla.com'},
@@ -33,17 +32,12 @@ var peerConnectionConfig = {
     ]
 };
 let localStream;
-//get stream 
-
 let token;
 let call_token;
 
 //checkSignIn();
 
-
-
 if (document.location.hash === "" || document.location.hash === undefined) { 
-
     // create the unique token for this call 
     token =Math.round(Math.random()*10000);
     call_token = "#"+token;
@@ -57,270 +51,264 @@ if (document.location.hash === "" || document.location.hash === undefined) {
 }
 
 Room_Number.innerHTML = 'Room_Number : '+ call_token.split('#')[1];
+  
+filter.addEventListener('change', (event) => {
+    currentFilter = event.target.value
+    localVideo.style.filter = currentFilter
+    var data={};
+    data.currentFilter=currentFilter;
+    data.id = socketId
+    data.type = 'filter'
+    SendData(data)
+})
+chatting_bar.addEventListener('click',event =>{
+    let message_box = document.querySelector('body > div.container').hidden;
+    if(message_box == true ){
+        document.querySelector('body > div.container').hidden = false;
+        document.querySelector('body > div.chat').hidden = false;
+    }else{
+        document.querySelector('body > div.container').hidden=true;
+        document.querySelector('body > div.chat').hidden = true;
+    }
+})
+chat_button.addEventListener('click',event=>{
+    let data = {}
+    let text = document.getElementById('chat').value;
+    let nm = document.createElement('span')
+    nm.className='nm'
+    nm.innerText = 'me'
+    let co = document.createElement('span')
+    co.className='co'
+    co.innerText = text;
+    let tm = document.createElement('span')
+    tm.className='tm'
+    let chat = document.querySelector('body > div.chat');
+    let ul = document.createElement('ul')
+    ul.className='from_me'
+    let li = document.createElement('li')
+    let br = document.createElement('br')
+    ul.appendChild(li)
+    li.appendChild(nm)
+    li.appendChild(co)
+    li.appendChild(tm)
+    chat.appendChild(ul)
+    chat.appendChild(br)
+    data.type = 'chat'
+    data.text=text;
+    SendData(data)
+});
+screenshare_button.addEventListener('click', event =>{
+    var constraints = {
+        video: true,
+        audio: true,
+    };
+    if(screenshare_button.innerHTML == '화면공유'){
+        navigator.mediaDevices.getDisplayMedia(constraints).then(screenstream =>{
+            screenshare_button.innerHTML='화면공유중단'
 
-navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-    .then(stream => {
-        
-        localVideo.srcObject = stream
+                 localVideo.srcObject=screenstream;
+                 localVideo.play();
+                 let screenTrack = screenstream.getVideoTracks()[0];
+                 Object.keys(connections).forEach(function(connection) {
+                    var sender = connections[connection].getSenders().find(function(s) {
+                      return s.track.kind == screenTrack.kind;
+                    });
+                    console.log('found sender:', sender);
+                    sender.replaceTrack(screenTrack);
+                  });
+            })
+    }else if(screenshare_button.innerHTML == '화면공유중단'){
+        navigator.mediaDevices.getUserMedia(constraints).then(videostream =>{
+            screenshare_button.innerHTML='화면공유'
+
+                 localVideo.srcObject=videostream;
+                 localVideo.play();
+                 let videoTrack = videostream.getVideoTracks()[0];
+                 Object.keys(connections).forEach(function(connection) {
+                    var sender = connections[connection].getSenders().find(function(s) {
+                      return s.track.kind == videoTrack.kind;
+                    });
+                    console.log('found sender:', sender);
+                    sender.replaceTrack(videoTrack);
+                  });
+            })
+    }
+})
+lock_button.addEventListener('click', event =>{
+socket.emit('request_lock',document.location.hash)
+})
+$('#evaluation_button').click(function () {
+    socket.emit('open-evaluate', { roomId: document.location.hash, myname });
+});
+$('#submitEvaluate').click(function () {
+    var formData = $('#formEvaluate').serializeArray();
+    formData.push({name : "masterName" , value : mymasterName});
+    $.ajax({
+        url: 'https://15.164.19.240:5000/',
+        type: 'POST',
+        data: formData,
+        dataType: 'json',
+        success: function (data) {
+            alert('전송이 완료되었습니다.');
+            $('#exampleModalCenter').modal('hide');
+        },
+        error: function(xhr, status) {
+            alert('전송이 완료되었습니다.');
+            $('#exampleModalCenter').modal('hide');
+        }
+    })
+ });
+
+
+
+
+// main async function 
+async function run(){
+        if (!sessionStorage['accessToken']) {
+            alert('You are connected anonymously.')
+            //throw new Error('cognito accessToken is not defined!!! please Sign In');
+        }
+        localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        localVideo.srcObject = localStream;
         localVideo.play();
-        
-        filter.addEventListener('change', (event) => {
-            currentFilter = event.target.value
-            localVideo.style.filter = currentFilter
-            var data={};
-            data.currentFilter=currentFilter;
-            data.id = socketId
-            data.type = 'filter'
-            SendData(data)
-            event.preventDefault
-        })
-        
-        chatting_bar.addEventListener('click',event =>{
-            let message_box = document.querySelector('body > div.container').hidden;
-            if(message_box == true ){
-                document.querySelector('body > div.container').hidden = false;
-                document.querySelector('body > div.chat').hidden = false;
-            }else{
-                document.querySelector('body > div.container').hidden=true;
-                document.querySelector('body > div.chat').hidden = true;
-            }
-        })
-
-        chat_button.addEventListener('click',event=>{
-            let data = {}
-            let text = document.getElementById('chat').value;
-            let nm = document.createElement('span')
-            nm.className='nm'
-            nm.innerText = 'me'
-            let co = document.createElement('span')
-            co.className='co'
-            co.innerText = text;
-            let tm = document.createElement('span')
-            tm.className='tm'
-            let chat = document.querySelector('body > div.chat');
-            let ul = document.createElement('ul')
-            ul.className='from_me'
-            let li = document.createElement('li')
-            let br = document.createElement('br')
-            ul.appendChild(li)
-            li.appendChild(nm)
-            li.appendChild(co)
-            li.appendChild(tm)
-            chat.appendChild(ul)
-            chat.appendChild(br)
-            data.type = 'chat'
-            data.text=text;
-            SendData(data)
-        });
-        
-        screenshare_button.addEventListener('click', event =>{
-            var constraints = {
-                video: true,
-                audio: true,
-            };
-            if(screenshare_button.innerHTML == '화면공유'){
-                navigator.mediaDevices.getDisplayMedia(constraints).then(screenstream =>{
-                    screenshare_button.innerHTML='화면공유중단'
-                        stream = screenstream
-                         localVideo.srcObject=screenstream;
-                         localVideo.play();
-                         let screenTrack = screenstream.getVideoTracks()[0];
-                         Object.keys(connections).forEach(function(connection) {
-                            var sender = connections[connection].getSenders().find(function(s) {
-                              return s.track.kind == screenTrack.kind;
-                            });
-                            console.log('found sender:', sender);
-                            sender.replaceTrack(screenTrack);
-                          });
-                    })
-            }else if(screenshare_button.innerHTML == '화면공유중단'){
-                navigator.mediaDevices.getUserMedia(constraints).then(videostream =>{
-                    screenshare_button.innerHTML='화면공유'
-        
-                        stream = videostream 
-                         localVideo.srcObject=videostream;
-                         localVideo.play();
-                         let videoTrack = videostream.getVideoTracks()[0];
-                         Object.keys(connections).forEach(function(connection) {
-                            var sender = connections[connection].getSenders().find(function(s) {
-                              return s.track.kind == videoTrack.kind;
-                            });
-                            console.log('found sender:', sender);
-                            sender.replaceTrack(videoTrack);
-                          });
-                    })
-            }
-        })
-        lock_button.addEventListener('click', event =>{
-        socket.emit('request_lock',document.location.hash)
-        })
-
-        $('#evaluation_button').click(function () {
-            socket.emit('open-evaluate', { roomId: document.location.hash });
-        });
-      
-        
         socket = io()
-
-        
-
-        socket.on('signal', gotMessageFromServer);
         socket.on('connect', function(){
+            //check username
             if(sessionStorage['accessToken']!=undefined){
                 let accessToken = JSON.parse(sessionStorage['accessToken']);
                 myname  = accessToken.payload['cognito:username'];
+            }else{
+                myname = socket.id;
             }
             socket.emit('token_number',call_token, myname);
             socketId = socket.id;
-
-            socket.on('open-evaluate', function (data) {
-                request_evaluation(data);
-            });
-
-            socket.on('user-exceeded',function(){
-                alert('user exceeded!')
-            })
-            socket.on('user-left', function(id){
-                var video = document.getElementById(`${id}`);
-                video.parentElement.remove();
-                // var parentDiv = video.parentElement;
-                // video.parentElement.parentElement.removeChild(parentDiv);
-            });
-            socket.on('user-joined', function(id, count, client_socket_ids, masterName){
-                mymasterName = masterName
-                if(masterName == myname) {
-                    document.getElementById('evaluation_button').hidden = false;
-                }else {
-                    document.getElementById('evaluation_button').hidden = true ;
-                    
-                }
-                masterName_title.innerHTML = masterName + `'s session`;
-                console.log(id, count, client_socket_ids, masterName)
-                client_socket_ids.forEach(function(client_socket_id) {
-                    if(!connections[client_socket_id]){
-                        connections[client_socket_id] = new RTCPeerConnection(peerConnectionConfig);
-                        //if(client_socket_ids.indexOf(client_socket_id)<client_socket_ids.indexOf(client_))
-                            let channel = connections[client_socket_id].createDataChannel(`chat${client_socket_id}`)
-                            connections[client_socket_id].channel = channel
+        })
+        socket.on('user-left', function(id){
+            var video = document.getElementById(`${id}`);
+            video.parentElement.remove();
+            // var parentDiv = video.parentElement;
+            // video.parentElement.parentElement.removeChild(parentDiv);
+        });
+        socket.on('open-evaluate', function (masterName) {
+            if(masterName != myname){
+                masterName_val.innerHTML = masterName + '님의 수업은...';
+                $('#exampleModalCenter').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
+            }else{
+                alert('The request was successful.')
+            }
+        });
+        socket.on('user-exceeded',function(){
+            alert('user exceeded!')
+        })
+        socket.on('user-joined', function(id, count, client_socket_ids, masterName){
+            mymasterName = masterName
+            if(masterName == myname) {
+                document.getElementById('evaluation_button').hidden = false;
+            }else {
+                document.getElementById('evaluation_button').hidden = true ;
+            }
+            masterName_title.innerHTML = masterName + `'s session`;
+            console.log(id, count, client_socket_ids, masterName)
+            client_socket_ids.forEach(function(client_socket_id) {
+                if(!connections[client_socket_id]){
+                    connections[client_socket_id] = new RTCPeerConnection(peerConnectionConfig);
+                    //if(client_socket_ids.indexOf(client_socket_id)<client_socket_ids.indexOf(client_))
+                        let channel = connections[client_socket_id].createDataChannel(`chat${client_socket_id}`)
+                        connections[client_socket_id].channel = channel
+                        channel.onopen = function(event) {
+                            console.log(`it is create peer`)
+                            //channel.send('it is create peer');
+                          }
+                          /*channel.onmessage = function(event) {
+                            var data = JSON.parse(event.data)
+                            console.log(data)
+                            document.getElementById(`${data.id}`).style.filter = data.currentFilter;
+                            //if(connections[data.id])
+                            }*/
+                        
+                        //Wait for their ice candidate       
+                        connections[client_socket_id].onicecandidate = function(event){
+                            if(event.candidate != null) {
+                                console.log('SENDING ICE');
+                                socket.emit('signal', client_socket_id, JSON.stringify({'ice': event.candidate}));
+                            }
+                        }
+                        connections[client_socket_id].ondatachannel = function(event) {
+                            let channel = event.channel;
+                            //connections[client_socket_id].channel = channel
+                            
                             channel.onopen = function(event) {
-                                console.log(`it is create peer`)
-                                //channel.send('it is create peer');
-                              }
-                              /*channel.onmessage = function(event) {
+                                  console.log('it is receive peer')
+                              //channel.send('it is receive peer');
+                            }
+                            channel.onmessage = function(event) {
                                 var data = JSON.parse(event.data)
                                 console.log(data)
-                                document.getElementById(`${data.id}`).style.filter = data.currentFilter;
-                                //if(connections[data.id])
-                                }*/
-                            
-                            //Wait for their ice candidate       
-                            connections[client_socket_id].onicecandidate = function(event){
-                                if(event.candidate != null) {
-                                    console.log('SENDING ICE');
-                                    socket.emit('signal', client_socket_id, JSON.stringify({'ice': event.candidate}));
+                                if(data.type == 'filter'){
+                                    document.getElementById(`${data.id}`).style.filter = data.currentFilter;
+                                }
+                                else if(data.type =='chat'){
+                                    let text = data.text
+                                    let nm = document.createElement('span')
+                                    nm.className='nm'
+                                    nm.innerText = 'others'
+                                    let co = document.createElement('span')
+                                    co.className='co'
+                                    co.innerText = text;
+                                    let tm = document.createElement('span')
+                                    tm.className='tm'
+                                    let chat = document.querySelector('body > div.chat');
+                                    let ul = document.createElement('ul')
+                                    ul.className='from_others'
+                                    let li = document.createElement('li')
+                                    let br = document.createElement('br')
+                                    ul.appendChild(li)
+                                    li.appendChild(nm)
+                                    li.appendChild(co)
+                                    li.appendChild(tm)
+                                    chat.appendChild(ul)
+                                    chat.appendChild(br)
                                 }
                             }
-                            connections[client_socket_id].ondatachannel = function(event) {
-                                let channel = event.channel;
-                                //connections[client_socket_id].channel = channel
-                                
-                                  channel.onopen = function(event) {
-                                      console.log('it is receive peer')
-                                  //channel.send('it is receive peer');
-                                }
-                                channel.onmessage = function(event) {
-                                    var data = JSON.parse(event.data)
-                                    console.log(data)
-                                    if(data.type == 'filter'){
-                                        document.getElementById(`${data.id}`).style.filter = data.currentFilter;
-                                    }
-                                    else if(data.type =='chat'){
-                                        let text = data.text
-                                        let nm = document.createElement('span')
-                                        nm.className='nm'
-                                        nm.innerText = 'others'
-                                        let co = document.createElement('span')
-                                        co.className='co'
-                                        co.innerText = text;
-                                        let tm = document.createElement('span')
-                                        tm.className='tm'
-                                        let chat = document.querySelector('body > div.chat');
-                                        let ul = document.createElement('ul')
-                                        ul.className='from_others'
-                                        let li = document.createElement('li')
-                                        let br = document.createElement('br')
-                                        ul.appendChild(li)
-                                        li.appendChild(nm)
-                                        li.appendChild(co)
-                                        li.appendChild(tm)
-                                        chat.appendChild(ul)
-                                        chat.appendChild(br)
-                                    }
-                                }
-                            }
-                        
+                        }
+                    
                         connections[client_socket_id].ontrack = function(event){
                             gotRemoteStream(event, client_socket_id)
                         }    
-                       
-                        stream.getTracks().forEach(function(track) {
-                            connections[client_socket_id].addTrack(track, stream);
-                          });
-                          
-                    }
-                });
-                
-                if(count >= 2){
-                    connections[id].createOffer().then(function(description){
-                        connections[id].setLocalDescription(description).then(function() {
-                            socket.emit('signal', id, JSON.stringify({'sdp': connections[id].localDescription}));
-                        }).catch(e => console.log(e));        
-                    });
+                   
+                        localStream.getTracks().forEach(function(track) {
+                        connections[client_socket_id].addTrack(track, localStream);
+                      });
+                      
                 }
-
             });
-              
-        })
-
-        var accessToken = JSON.parse(sessionStorage['accessToken']);
-        
-        if (typeof accessToken == "undefined" || accessToken == null) {
-            alert('cognito accessToken is not defined!!!');
-        }
-
-
-    }).catch(err => alert(`Can not start the app due to this reason: ${err}`));
-
-
-
-                
-    $('#submitEvaluate').click(function () {
-        var formData = $('#formEvaluate').serializeArray();
-        formData.push({name : "masterName" , value : mymasterName});
-        $.ajax({
-            url: 'https://15.164.19.240:5000/',
-            type: 'POST',
-            data: formData,
-            dataType: 'json',
-            success: function (data) {
-                alert('전송이 완료되었습니다.');
-                $('#exampleModalCenter').modal('hide');
-            },
-            error: function(xhr, status) {
-                alert('전송이 완료되었습니다.');
-                $('#exampleModalCenter').modal('hide');
+            
+            if(count >= 2){
+                connections[id].createOffer().then(function(description){
+                    connections[id].setLocalDescription(description).then(function() {
+                        socket.emit('signal', id, JSON.stringify({'sdp': connections[id].localDescription}));
+                    }).catch(e => console.log(e));        
+                });
             }
-        })
-     });
 
-function request_evaluation(masterName){
-        masterName_val.innerHTML = masterName + '님의 수업은...';
-        $('#exampleModalCenter').modal({
-            backdrop: 'static',
-            keyboard: false
         });
+        socket.on('signal', gotMessageFromServer);
+        //Check Sign in
+        
+}
 
-    }
+//main function start
+run().catch(err => {
+            alert(`Can not start the app due to this reason: ${err}`)
+            });
+
+
+
+
+//function in run()
 function gotMessageFromServer(fromId, message, type) {
         //Make sure it's not coming from yourself
     if(type == 'sdp'){

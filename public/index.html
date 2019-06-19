@@ -212,7 +212,7 @@
 						document.getElementById('myNav').innerHTML += '<li><a href="signup.html" class="button primary">Sign Up</a></li>';
 						document.getElementById('myNav').innerHTML += '<li><a href="login.html" class="button primary">Sign In</a></li>';
 					} else {
-						var accessToken = JSON.parse(sessionStorage['accessToken']);
+						let accessToken = JSON.parse(sessionStorage['accessToken']);
 						document.getElementById('myNav').innerHTML += '<li><a href="myPage.html">My Page</a></li>';
 						document.getElementById('myNav').innerHTML += '<li>'+ accessToken.payload['cognito:username'] +'</li>';
 						document.getElementById('myNav').innerHTML += '<li><a href="login.html" class="button primary" onclick="signOut()">Sign out</a></li>';
@@ -225,22 +225,24 @@
 					window.location.replace("index.html");
 				}
 
+				// username을 이 함수로 전달하거나, Room.html 내에서 sessionStorage를 통해 username을 획득해도 된다.
 				function createRoom() {
 					if(!sessionStorage['accessToken']) {
 						alert("First, sign in to use the service!");
-						return;
+						alert("Otherwise, you will be anonymous and will not be able to request an evaluation.")
 					} else {
-						var accessToken = JSON.parse(sessionStorage['accessToken']);
-						// username을 이 함수로 전달하거나, Room.html 내에서 sessionStorage를 통해 username을 획득해도 된다.
-						//masterName = accessToken.payload['cognito:username'];
-						document.location.assign('Room.html');
+						let accessToken = JSON.parse(sessionStorage['accessToken']);
+						let username = accessToken.payload['cognito:username'];
+						alert(`Hi ${username} !! welcome mmm`);
 					}
+					document.location.assign('Room.html');
+				
 				}
 
 				function joinRoom(roomParam) {
 					if(!sessionStorage['accessToken']) {
 						alert("First, sign in to use the service!");
-						return;
+						alert("Otherwise, you will be anonymous and will not be able to request an evaluation.")
 					} else {
 						var roomNumber = roomParam;
 						var accessToken = JSON.parse(sessionStorage['accessToken']);

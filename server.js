@@ -1,33 +1,22 @@
 const express = require('express')
 const app = express();
-const https = require('https');
+const http = require('http')
+// const https = require('https');
 const fs = require('fs');
 let Rooms = {};
 let master ={};
-let https_server = https.createServer({
-    key:fs.readFileSync("my-key.pem"),
-    cert:fs.readFileSync("my-cert.pem")
-  },app);
+// let https_server = https.createServer({
+//     key:fs.readFileSync("my-key.pem"),
+//     cert:fs.readFileSync("my-cert.pem")
+//   },app);
+let http_server = http.createServer(app)
 
-let masterName;
-
-const io = require('socket.io')(https_server)
+const io = require('socket.io')(http_server)
 
 const port = process.env.PORT || 3000
 
 app.use(express.static(__dirname + "/public"))
 
-function isMaster(socket, RoomId) {
-    
-    if(Rooms[RoomId]){
-        if(Rooms[RoomId][0] == socket.id){
-            return true;
-        }
-        else return false;
-   }
-
-   return false;
-}
 
 function joinRoom(socket, RoomId) {
     if (Rooms[RoomId] === undefined) {
@@ -37,29 +26,18 @@ function joinRoom(socket, RoomId) {
     if (!Rooms[RoomId].includes(socket.id)) {
         Rooms[RoomId].push(socket.id);
     }
-   
-
 }
 
 io.on('connection', function (socket) {
 
     socket.on('token_number',function(token,username){
 
-        // if(!Rooms[token]){
-        //     Rooms[token]=[socket.id]
-        // }else{
-        //     Rooms[token].push(socket.id)
-        // }
-
-
         joinRoom(socket, token);
         if(Rooms[token].length == 1 ){
-            master[token] = username;
+                master[token] = username;
         }
         console.log(Rooms);
 
-     
-        
         if(Rooms[token].length > 6){
                 io.to(socket.id).emit("user-exceeded")
         }else{
@@ -94,20 +72,16 @@ io.on('connection', function (socket) {
     })
 
     socket.on('open-evaluate', function(data) {
-        const { roomId } = data;
-
-       if (isMaster(socket, roomId)) {
-            Rooms[roomId].forEach(function(socketId, idx){
-                //console.log(idx);
-                if (idx > 0) {
+        const { roomId, myname } = data;
+        if(myname == master[roomId]){
+                Rooms[roomId].forEach(function(socketId){
                     io.to(socketId).emit("open-evaluate", master[roomId]);
-                }              
             })
-       }
+        }
+         
     });
 
 	socket.on('disconnect', function() {
-        let MyRoom
         let token
         Object.keys(Rooms).forEach(function(RoomId){
             for(let i=0;i<Rooms[RoomId].length;i++){
@@ -127,17 +101,13 @@ io.on('connection', function (socket) {
                 io.to(SocketId).emit("user-left", socket.id)
             })
         }
-     
-
-
     })
-
-
 })
 
 
 
-https_server.listen(port, () => console.log(`Active on ${port} port`))
+//https_server.listen(port, () => console.log(`Active on ${port} port`))
 
+http_server.listen(port, () => console.log(`Active on ${port} port`));
 
 
