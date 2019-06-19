@@ -228,8 +228,7 @@
 				// username을 이 함수로 전달하거나, Room.html 내에서 sessionStorage를 통해 username을 획득해도 된다.
 				function createRoom() {
 					if(!sessionStorage['accessToken']) {
-						alert("First, sign in to use the service!");
-						alert("Otherwise, you will be anonymous and will not be able to request an evaluation.")
+						alert(`First, sign in to use the service! Otherwise, you will be anonymous and will not be able to request an evaluation.`);
 					} else {
 						let accessToken = JSON.parse(sessionStorage['accessToken']);
 						let username = accessToken.payload['cognito:username'];
@@ -239,13 +238,11 @@
 				
 				}
 
-				function joinRoom(roomParam) {
+				function joinRoom(roomNumber) {
 					if(!sessionStorage['accessToken']) {
-						alert("First, sign in to use the service!");
-						alert("Otherwise, you will be anonymous and will not be able to request an evaluation.")
+						alert(`First, sign in to use the service! Otherwise, you will be anonymous and will not be able to request an evaluation.`);
 						document.location.assign(`Room.html#${roomNumber}`);
 					} else {
-						var roomNumber = roomParam;
 						var accessToken = JSON.parse(sessionStorage['accessToken']);
 						document.location.assign(`Room.html#${roomNumber}`);
 					}

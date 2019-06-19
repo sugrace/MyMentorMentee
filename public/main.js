@@ -163,7 +163,10 @@ $('#submitEvaluate').click(function () {
 
 // main async function 
 async function run(){
-        
+        if (!sessionStorage['accessToken']) {
+            alert('You are connected anonymously.')
+            //throw new Error('cognito accessToken is not defined!!! please Sign In');
+        }
         localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         localVideo.srcObject = localStream;
         localVideo.play();
