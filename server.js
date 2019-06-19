@@ -1,15 +1,15 @@
 const express = require('express')
 const app = express();
-const http = require('http')
-// const https = require('https');
+// const http = require('http')
+const https = require('https');
 const fs = require('fs');
 let Rooms = {};
 let master ={};
-// let https_server = https.createServer({
-//     key:fs.readFileSync("my-key.pem"),
-//     cert:fs.readFileSync("my-cert.pem")
-//   },app);
-let http_server = http.createServer(app)
+let https_server = https.createServer({
+    key:fs.readFileSync("my-key.pem"),
+    cert:fs.readFileSync("my-cert.pem")
+  },app);
+// let http_server = http.createServer(app)
 
 const io = require('socket.io')(http_server)
 
@@ -106,8 +106,8 @@ io.on('connection', function (socket) {
 
 
 
-//https_server.listen(port, () => console.log(`Active on ${port} port`))
+https_server.listen(port, () => console.log(`Active on ${port} port`))
 
-http_server.listen(port, () => console.log(`Active on ${port} port`));
+//http_server.listen(port, () => console.log(`Active on ${port} port`));
 
 
