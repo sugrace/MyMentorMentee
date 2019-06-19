@@ -1,7 +1,7 @@
 {
-  "name": "simple-videochat-webrtc",
+  "name": "mymentormentee",
   "version": "1.0.0",
-  "description": "Video Chat between 2 people using simple-peer",
+  "description": "WebRTC Video Chat app ",
   "main": "main.js",
   "scripts": {
     "start": "node server.js",
