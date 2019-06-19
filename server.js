@@ -11,7 +11,7 @@ let https_server = https.createServer({
   },app);
 // let http_server = http.createServer(app)
 
-const io = require('socket.io')(http_server)
+const io = require('socket.io')(https_server)
 
 const port = process.env.PORT || 3000
 
