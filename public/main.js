@@ -261,7 +261,7 @@ async function run(){
         })
         socket.on('user-left', function(id){
             var video = document.getElementById(`${id}`);
-            if(video.parentElement != null){
+            if(video != null && video.parentElement != null){
                 video.parentElement.remove();
             }
             Object.keys(connections).forEach(function(connection_id){
