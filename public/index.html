@@ -8,7 +8,7 @@
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
 	</head>
-	<body class="is-preload landing" onload="initRenderPage()">
+	<body class="is-preload landing" >
 		<div id="page-wrapper">
 
 			<!-- Header -->
@@ -196,31 +196,8 @@
 				</footer>
 
 		</div>
-
-		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/jquery.scrolly.min.js"></script>
-			<script src="assets/js/jquery.dropotron.min.js"></script>
-			<script src="assets/js/jquery.scrollex.min.js"></script>
-			<script src="assets/js/browser.min.js"></script>
-			<script src="assets/js/breakpoints.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<script src="assets/js/main.js"></script>
-			<script>
-				function initRenderPage() {
-					if(!sessionStorage['accessToken']) {
-						document.getElementById('myNav').innerHTML += '<li><a href="signup.html" class="button primary">Sign Up</a></li>';
-						document.getElementById('myNav').innerHTML += '<li><a href="login.html" class="button primary">Sign In</a></li>';
-					} else {
-						let accessToken = JSON.parse(sessionStorage['accessToken']);
-						document.getElementById('myNav').innerHTML += '<li><a href="myPage.html">My Page</a></li>';
-						document.getElementById('myNav').innerHTML += '<li>'+ accessToken.payload['cognito:username'] +'</li>';
-						document.getElementById('myNav').innerHTML += '<li><a href="login.html" class="button primary" onclick="signOut()">Sign out</a></li>';
-					}
-					//console.log(accessToken);
-				}
-
-				function signOut() {
+<script>
+			function signOut() {
 					sessionStorage.clear();
 					window.location.replace("index.html");
 				}
@@ -247,7 +224,26 @@
 						document.location.assign(`Room.html#${roomNumber}`);
 					}
 				}
-			</script>
+
+		if(!sessionStorage['accessToken']) {
+						document.getElementById('myNav').innerHTML += '<li><a href="signup.html" class="button primary">Sign Up</a></li>';
+						document.getElementById('myNav').innerHTML += '<li><a href="login.html" class="button primary">Sign In</a></li>';
+					} else {
+						let accessToken = JSON.parse(sessionStorage['accessToken']);
+						document.getElementById('myNav').innerHTML += '<li><a href="myPage.html">My Page</a></li>';
+						document.getElementById('myNav').innerHTML += '<li>'+ accessToken.payload['cognito:username'] +'</li>';
+						document.getElementById('myNav').innerHTML += '<li><a href="login.html" class="button primary" onclick="signOut()">Sign out</a></li>';
+					}
+</script>
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/jquery.dropotron.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
 
 	</body>
 </html>
