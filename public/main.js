@@ -379,6 +379,7 @@ async function run(){
 
             if(socketId != id){
                 connections[id].createOffer().then(function(description){
+                    //console.log("before setLocalDescription")
                     connections[id].setLocalDescription(description).then(function() {
                         socket.emit('signal', id, JSON.stringify({'sdp': connections[id].localDescription}));
                     }).catch(e => console.log(e));        
@@ -406,7 +407,7 @@ function gotMessageFromServer(fromId, message, type) {
         if(fromId != socketId) {
             var signal = JSON.parse(message)
                 if(signal.sdp){   
-
+                    //console.log("before setRemoteDescription")
                     connections[fromId].setRemoteDescription(new RTCSessionDescription(signal.sdp)).then(function() {                
                         if(signal.sdp.type == 'offer') {
                             connections[fromId].createAnswer().then(function(description){
@@ -483,7 +484,7 @@ function SendData(data) {
     if (connection_ids.length>0) {
         connection_ids.forEach(function(connection_id){
             if(connection_id!=socketId){
-            console.log(connections[connection_id])
+            //console.log(connections[connection_id])
             connections[connection_id].channel.send(JSON.stringify(data))
             }
         })
