@@ -186,6 +186,12 @@ async function run(){
         socket.on('user-left', function(id){
             var video = document.getElementById(`${id}`);
             video.parentElement.remove();
+            Object.keys(connections).forEach(function(connection_id){
+                if(connection_id == id){
+                    delete connections[connection_id];
+                }
+            })
+            console.log(connections);
             // var parentDiv = video.parentElement;
             // video.parentElement.parentElement.removeChild(parentDiv);
         });
@@ -211,6 +217,7 @@ async function run(){
                 document.getElementById('evaluation_button').hidden = true ;
             }
             masterName_title.innerHTML = masterName + `'s session`;
+            console.log(connections)
             console.log(id, count, client_socket_ids, masterName)
             client_socket_ids.forEach(function(client_socket_id) {
                 if(!connections[client_socket_id]){
@@ -285,8 +292,8 @@ async function run(){
                       
                 }
             });
-            
-            if(count >= 2){
+
+            if(count >= 2 && socketId != id){
                 connections[id].createOffer().then(function(description){
                     connections[id].setLocalDescription(description).then(function() {
                         socket.emit('signal', id, JSON.stringify({'sdp': connections[id].localDescription}));
@@ -314,7 +321,9 @@ function gotMessageFromServer(fromId, message, type) {
     if(type == 'sdp'){
         if(fromId != socketId) {
             var signal = JSON.parse(message)
-                if(signal.sdp){            
+                if(signal.sdp){   
+            console.log("before create Remote object")
+
                     connections[fromId].setRemoteDescription(new RTCSessionDescription(signal.sdp)).then(function() {                
                         if(signal.sdp.type == 'offer') {
                             connections[fromId].createAnswer().then(function(description){
