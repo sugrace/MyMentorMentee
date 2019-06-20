@@ -406,7 +406,6 @@ function gotMessageFromServer(fromId, message, type) {
         if(fromId != socketId) {
             var signal = JSON.parse(message)
                 if(signal.sdp){   
-            console.log("before create Remote object")
 
                     connections[fromId].setRemoteDescription(new RTCSessionDescription(signal.sdp)).then(function() {                
                         if(signal.sdp.type == 'offer') {
@@ -433,7 +432,9 @@ function gotMessageFromServer(fromId, message, type) {
                     }).catch(e => console.log(e));
                 }
                 if(signal.ice) {
-                    connections[fromId].addIceCandidate(new RTCIceCandidate(signal.ice)).catch(e => console.log(e));
+                    if(connections[fromId]!=undefined){
+                        connections[fromId].addIceCandidate(new RTCIceCandidate(signal.ice)).catch(e => console.log(e));
+                    }
                 }                
             }
         }
