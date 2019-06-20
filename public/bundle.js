@@ -8,6 +8,12 @@ const screenshare_button = document.getElementById('screenshare_button');
 const lock_button = document.getElementById('lock_button');
 const Room_Number = document.getElementById('Room_number');
 const chatting_bar = document.getElementById('chatting_bar');
+const side_Room_Number = document.querySelector('#navPanel > nav > a:nth-child(1)');
+const side_request_evaluation_button = document.querySelector('#navPanel > nav > a:nth-child(2)');
+const side_lock_button = document.querySelector('#navPanel > nav > a:nth-child(3)');
+const side_screen_share_button = document.querySelector('#navPanel > nav > a:nth-child(4)');
+const side_chatting_bar = document.querySelector('#navPanel > nav > a:nth-child(5)');
+let unlocked = true;
 let connections = [];
 let inboundStream = null;
 let stream_cnt=0;
@@ -49,9 +55,9 @@ if (document.location.hash === "" || document.location.hash === undefined) {
 }else{
     call_token = document.location.hash;
 }
-
+//--------front button (pc use)
 Room_Number.innerHTML = 'Room_Number : '+ call_token.split('#')[1];
-  
+
 filter.addEventListener('change', (event) => {
     currentFilter = event.target.value
     localVideo.style.filter = currentFilter
@@ -105,6 +111,7 @@ screenshare_button.addEventListener('click', event =>{
     if(screenshare_button.innerHTML == '화면공유'){
         navigator.mediaDevices.getDisplayMedia(constraints).then(screenstream =>{
             screenshare_button.innerHTML='화면공유중단'
+            side_screen_share_button.innerHTML='화면공유중단'
 
                  localVideo.srcObject=screenstream;
                  localVideo.play();
@@ -120,6 +127,7 @@ screenshare_button.addEventListener('click', event =>{
     }else if(screenshare_button.innerHTML == '화면공유중단'){
         navigator.mediaDevices.getUserMedia(constraints).then(videostream =>{
             screenshare_button.innerHTML='화면공유'
+            side_screen_share_button.innerHTML='화면공유'
 
                  localVideo.srcObject=videostream;
                  localVideo.play();
@@ -135,10 +143,79 @@ screenshare_button.addEventListener('click', event =>{
     }
 })
 lock_button.addEventListener('click', event =>{
-socket.emit('request_lock',document.location.hash)
+    socket.emit('request_lock',document.location.hash)
+    unlocked = false;
 })
+
+//-----------side button (mobile use)
+side_Room_Number.innerHTML ='Room_Number : '+ call_token.split('#')[1];
+side_request_evaluation_button.addEventListener('click', event => {
+    if(unlocked){
+        socket.emit('open-evaluate', { roomId: document.location.hash, myname });
+    }else{
+        alert('locked page can not request evaluation')
+    }
+});
+side_lock_button.addEventListener('click', event =>{
+    socket.emit('request_lock',document.location.hash)
+    unlocked = false;
+    })
+side_screen_share_button.addEventListener('click', event =>{
+        var constraints = {
+            video: true,
+            audio: true,
+        };
+        if(screenshare_button.innerHTML == '화면공유'){
+            navigator.mediaDevices.getDisplayMedia(constraints).then(screenstream =>{
+                screenshare_button.innerHTML='화면공유중단'
+                side_screen_share_button.innerHTML='화면공유중단'
+    
+                     localVideo.srcObject=screenstream;
+                     localVideo.play();
+                     let screenTrack = screenstream.getVideoTracks()[0];
+                     Object.keys(connections).forEach(function(connection) {
+                        var sender = connections[connection].getSenders().find(function(s) {
+                          return s.track.kind == screenTrack.kind;
+                        });
+                        console.log('found sender:', sender);
+                        sender.replaceTrack(screenTrack);
+                      });
+                })
+        }else if(screenshare_button.innerHTML == '화면공유중단'){
+            navigator.mediaDevices.getUserMedia(constraints).then(videostream =>{
+                screenshare_button.innerHTML='화면공유'
+                side_screen_share_button.innerHTML='화면공유'
+                     localVideo.srcObject=videostream;
+                     localVideo.play();
+                     let videoTrack = videostream.getVideoTracks()[0];
+                     Object.keys(connections).forEach(function(connection) {
+                        var sender = connections[connection].getSenders().find(function(s) {
+                          return s.track.kind == videoTrack.kind;
+                        });
+                        console.log('found sender:', sender);
+                        sender.replaceTrack(videoTrack);
+                      });
+                })
+        }
+    })
+side_chatting_bar.addEventListener ('click', event =>{
+    let message_box = document.querySelector('body > div.container').hidden;
+    if(message_box == true ){
+        document.querySelector('body > div.container').hidden = false;
+        document.querySelector('body > div.chat').hidden = false;
+    }else{
+        document.querySelector('body > div.container').hidden=true;
+        document.querySelector('body > div.chat').hidden = true;
+    }
+});
+
+
 $('#evaluation_button').click(function () {
-    socket.emit('open-evaluate', { roomId: document.location.hash, myname });
+    if(unlocked){
+        socket.emit('open-evaluate', { roomId: document.location.hash, myname });
+    }else{
+        alert('locked page can not request evaluation')
+    }
 });
 $('#submitEvaluate').click(function () {
     var formData = $('#formEvaluate').serializeArray();
@@ -185,7 +262,9 @@ async function run(){
         })
         socket.on('user-left', function(id){
             var video = document.getElementById(`${id}`);
-            video.parentElement.remove();
+            if(video.parentElement != null){
+                video.parentElement.remove();
+            }
             Object.keys(connections).forEach(function(connection_id){
                 if(connection_id == id){
                     delete connections[connection_id];
@@ -209,16 +288,22 @@ async function run(){
         socket.on('user-exceeded',function(){
             alert('user exceeded!')
         })
-        socket.on('user-joined', function(id, count, client_socket_ids, masterName){
+        socket.on('user-joined', function(id, client_socket_ids, masterName){
             mymasterName = masterName
             if(masterName == myname) {
                 document.getElementById('evaluation_button').hidden = false;
+                side_request_evaluation_button.hidden=false;
             }else {
-                document.getElementById('evaluation_button').hidden = true ;
+                if(document.getElementById('evaluation_button')){
+                    document.getElementById('evaluation_button').remove();
+                }
+                if(side_request_evaluation_button){
+                    side_request_evaluation_button.remove();
+                }
             }
             masterName_title.innerHTML = masterName + `'s session`;
             console.log(connections)
-            console.log(id, count, client_socket_ids, masterName)
+            console.log(id, client_socket_ids, masterName)
             client_socket_ids.forEach(function(client_socket_id) {
                 if(!connections[client_socket_id]){
                     connections[client_socket_id] = new RTCPeerConnection(peerConnectionConfig);
@@ -293,7 +378,7 @@ async function run(){
                 }
             });
 
-            if(count >= 2 && socketId != id){
+            if(socketId != id){
                 connections[id].createOffer().then(function(description){
                     connections[id].setLocalDescription(description).then(function() {
                         socket.emit('signal', id, JSON.stringify({'sdp': connections[id].localDescription}));
@@ -357,6 +442,8 @@ function gotMessageFromServer(fromId, message, type) {
             if(message == true){
                 alert("Room is deleted in Signaling Server")
                 Room_Number.innerHTML="Secret Room"
+                side_Room_Number.innerHTML="Secret Room"
+
             }else if(message == false){
                 alert("You are not a Room's owner")
             }
