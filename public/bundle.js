@@ -147,7 +147,7 @@ lock_button.addEventListener('click', event =>{
     unlocked = false;
 })
 
-//-----------side button (mobile use)
+//-----------side button (mobile or pc use)
 side_Room_Number.innerHTML ='Room_Number : '+ call_token.split('#')[1];
 side_request_evaluation_button.addEventListener('click', event => {
     if(unlocked){
