@@ -119,7 +119,7 @@ screenshare_button.addEventListener('click', event =>{
                     var sender = connections[connection].getSenders().find(function(s) {
                       return s.track.kind == screenTrack.kind;
                     });
-                    console.log('found sender:', sender);
+                    //console.log('found sender:', sender);
                     sender.replaceTrack(screenTrack);
                   });
             })
@@ -135,7 +135,7 @@ screenshare_button.addEventListener('click', event =>{
                     var sender = connections[connection].getSenders().find(function(s) {
                       return s.track.kind == videoTrack.kind;
                     });
-                    console.log('found sender:', sender);
+                    //console.log('found sender:', sender);
                     sender.replaceTrack(videoTrack);
                   });
             })
@@ -176,7 +176,7 @@ side_screen_share_button.addEventListener('click', event =>{
                         var sender = connections[connection].getSenders().find(function(s) {
                           return s.track.kind == screenTrack.kind;
                         });
-                        console.log('found sender:', sender);
+                        //console.log('found sender:', sender);
                         sender.replaceTrack(screenTrack);
                       });
                 })
@@ -191,7 +191,7 @@ side_screen_share_button.addEventListener('click', event =>{
                         var sender = connections[connection].getSenders().find(function(s) {
                           return s.track.kind == videoTrack.kind;
                         });
-                        console.log('found sender:', sender);
+                        //console.log('found sender:', sender);
                         sender.replaceTrack(videoTrack);
                       });
                 })
@@ -269,7 +269,7 @@ async function run(){
                     delete connections[connection_id];
                 }
             })
-            console.log(connections);
+            //console.log(connections);
             // var parentDiv = video.parentElement;
             // video.parentElement.parentElement.removeChild(parentDiv);
         });
@@ -310,7 +310,7 @@ async function run(){
                         let channel = connections[client_socket_id].createDataChannel(`chat${client_socket_id}`)
                         connections[client_socket_id].channel = channel
                         channel.onopen = function(event) {
-                            console.log(`it is create peer`)
+                            //console.log(`it is create peer`)
                             //channel.send('it is create peer');
                           }
                           /*channel.onmessage = function(event) {
@@ -323,7 +323,7 @@ async function run(){
                         //Wait for their ice candidate       
                         connections[client_socket_id].onicecandidate = function(event){
                             if(event.candidate != null) {
-                                console.log('SENDING ICE');
+                                //console.log('SENDING ICE');
                                 socket.emit('signal', client_socket_id, JSON.stringify({'ice': event.candidate}));
                             }
                         }
@@ -332,7 +332,7 @@ async function run(){
                             //connections[client_socket_id].channel = channel
                             
                             channel.onopen = function(event) {
-                                  console.log('it is receive peer')
+                                  //console.log('it is receive peer')
                               //channel.send('it is receive peer');
                             }
                             channel.onmessage = function(event) {
