@@ -256,8 +256,8 @@ async function run(){
             }else{
                 myname = socket.id;
             }
-            socket.emit('token_number',call_token, myname);
             socketId = socket.id;
+            socket.emit('token_number',call_token, myname);
         })
         socket.on('user-left', function(id){
             var video = document.getElementById(`${id}`);
