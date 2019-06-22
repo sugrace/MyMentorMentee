@@ -25,17 +25,20 @@ let accessToken_master;
 let currentFilter;
 var peerConnectionConfig = {
     'iceServers': [
-        {'urls': 'stun:stun.l.google.com:19302'},
         {
-            url: 'turn:turn.bistri.com:80',
-            credential: 'homeo',
-            username: 'homeo'
-         },
-         {
-            url: 'turn:turn.anyfirewall.com:443?transport=tcp',
-            credential: 'webrtc',
-            username: 'webrtc'
-        }
+            urls: [ "stun:tk-turn2.xirsys.com" ]
+         }, {
+            username: "2tKF9D-GB6o0Hp8B1XDTynmsw39taJ3b-dcEqz4afmOii4cYxWu7C6rMzCSj7Mb4AAAAAF0ODuNldmVl",
+            credential: "ae1ce7ac-94df-11e9-93d4-066b071c7196",
+            urls: [
+                "turn:tk-turn2.xirsys.com:80?transport=udp",
+                "turn:tk-turn2.xirsys.com:3478?transport=udp",
+                "turn:tk-turn2.xirsys.com:80?transport=tcp",
+                "turn:tk-turn2.xirsys.com:3478?transport=tcp",
+                "turns:tk-turn2.xirsys.com:443?transport=tcp",
+                "turns:tk-turn2.xirsys.com:5349?transport=tcp"
+            ]
+         }
     ]
 };
 let localStream;
