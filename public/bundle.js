@@ -31,7 +31,12 @@ var peerConnectionConfig = {
             url: 'turn:turn.bistri.com:80',
             credential: 'homeo',
             username: 'homeo'
-         }
+         },
+         {
+            url: 'turn:turn.anyfirewall.com:443?transport=tcp',
+            credential: 'webrtc',
+            username: 'webrtc'
+        }
     ]
 };
 let localStream;
