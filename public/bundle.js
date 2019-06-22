@@ -26,8 +26,8 @@ let accessToken_master;
 let currentFilter;
 var peerConnectionConfig = {
     'iceServers': [
-        // {'urls': 'stun:stun.services.mozilla.com'},
-        // {'urls': 'stun:stun.l.google.com:19302'},
+        {'urls': 'stun:stun.services.mozilla.com'},
+        {'urls': 'stun:stun.l.google.com:19302'},
         {
             "urls": [
             "turn:13.250.13.83:3478?transport=udp"
@@ -288,7 +288,7 @@ async function run(){
         socket.on('user-exceeded',function(){
             alert('user exceeded!')
         })
-        socket.on('user-joined', function(id, client_socket_ids, masterName){
+        socket.on('user-joined', function(id, count, client_socket_ids, masterName){
             mymasterName = masterName
             if(masterName == myname) {
                 document.getElementById('evaluation_button').hidden = false;
@@ -378,7 +378,7 @@ async function run(){
                 }
             });
 
-            if(socketId != id){
+            if(count >= 2){
                 connections[id].createOffer().then(function(description){
                     //console.log("before setLocalDescription")
                     connections[id].setLocalDescription(description).then(function() {
