@@ -42,7 +42,7 @@ io.on('connection', function (socket) {
                 io.to(socket.id).emit("user-exceeded")
         }else{
             Rooms[token].forEach(function(SocketId){
-                io.to(SocketId).emit("user-joined", socket.id , Rooms[token].length, Rooms[token], master[token] )
+                io.to(SocketId).emit("user-joined", socket.id , Rooms[token], master[token] )
             })
         }
      

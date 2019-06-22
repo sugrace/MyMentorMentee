@@ -288,7 +288,7 @@ async function run(){
         socket.on('user-exceeded',function(){
             alert('user exceeded!')
         })
-        socket.on('user-joined', function(id, count, client_socket_ids, masterName){
+        socket.on('user-joined', function(id, client_socket_ids, masterName){
             mymasterName = masterName
             if(masterName == myname) {
                 document.getElementById('evaluation_button').hidden = false;
@@ -378,7 +378,7 @@ async function run(){
                 }
             });
 
-            if(count >= 2){
+            if(socketId != id){
                 connections[id].createOffer().then(function(description){
                     //console.log("before setLocalDescription")
                     connections[id].setLocalDescription(description).then(function() {
