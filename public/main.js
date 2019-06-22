@@ -25,7 +25,7 @@ let accessToken_master;
 let currentFilter;
 var peerConnectionConfig = {
     'iceServers': [
-        {'urls': 'stun:stun.services.mozilla.com'},
+       // {'urls': 'stun:stun.services.mozilla.com'},
         {'urls': 'stun:stun.l.google.com:19302'},
         {
             "urls": [
