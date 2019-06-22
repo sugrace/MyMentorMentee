@@ -324,7 +324,7 @@ async function run(){
                         //Wait for their ice candidate       
                         connections[client_socket_id].onicecandidate = function(event){
                             if(event.candidate != null) {
-                                //console.log('SENDING ICE');
+                                console.log('SENDING ICE',client_socket_id);
                                 socket.emit('signal', client_socket_id, JSON.stringify({'ice': event.candidate}));
                             }
                         }
