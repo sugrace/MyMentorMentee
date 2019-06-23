@@ -309,7 +309,7 @@ async function run(){
             console.log(connections)
             console.log(id, client_socket_ids, masterName)
             client_socket_ids.forEach(function(client_socket_id) {
-                if(!connections[client_socket_id]){
+                if(socketId != client_socket_id && !connections[client_socket_id]){
                     connections[client_socket_id] = new RTCPeerConnection(peerConnectionConfig);
                     //if(client_socket_ids.indexOf(client_socket_id)<client_socket_ids.indexOf(client_))
                         let channel = connections[client_socket_id].createDataChannel(`chat${client_socket_id}`)
