@@ -14,6 +14,7 @@
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="assets/js/env.js"></script>
     <title>My Mentor Mentee | My Page</title>
 </head>
 <body class="is-preload" onload="startPage()">
@@ -25,23 +26,6 @@
                     <nav id="nav">
                         <ul id="myNav">
                             <li><a href="index.html">Home</a></li>
-                            <!-- <li>
-                                <a href="#">Mentoring</a>
-                                <ul>
-                                    <li><a href="section_subject.html">Section & Subject</a></li>
-                                    <li><a href="mentor.html">Mentor</a></li>
-                                    <li><a href="apply.html">Apply</a></li>
-                                
-                                </ul>
-                            </li>
-                            <li><a href="groupstudy.html">Group Study</a>
-                                <ul>
-                                    <li><a href="#">College lecture study</a></li>
-                                    <li><a href="#">Language skill study</a></li>
-                                    <li><a href="#">Algorithm study</a></li>
-                                    <li><a href="#">Employment study</a></li>
-                                </ul>
-                            </li> -->
                             <li><a href="boards.html">Boards</a></li>
                             <!-- <li><a href="mypage.html">My Page</a></li>
                             <li><a href="signup.html" class="button primary"> Sign Up</a></li>
@@ -66,9 +50,8 @@
                             <div class="box-body">
                                      <div class="col-sm-6">
                                      <div  align="center"> <img alt="User Pic" src="https://x1.xingassets.com/assets/frontend_minified/img/users/nobody_m.original.jpg" id="profile-image1" class="img-circle img-responsive"> 
-                                
-                                <input id="profile-image-upload" class="hidden" type="file">
-                <div style="color:#999;" >click here to change profile image</div>
+                                <input id="profile-image-upload" type="file" onchange="uploadImage(this);">
+                <!-- <div style="color:#999;" >click here to change profile image</div> -->
                                 <!--Upload Image Js And Css-->
 
                                      </div>
@@ -84,20 +67,12 @@
                             <div class="clearfix"></div>
                             <hr style="margin:5px 0 5px 0;">
                     
-                              
-                <div class="col-sm-5 col-xs-6 tital " >First Name:</div><div class="col-sm-7 col-xs-6 ">1</div>
-                     <div class="clearfix"></div>
-                <div class="bot-border"></div>
-                
-                <div class="col-sm-5 col-xs-6 tital " >Last Name:</div><div class="col-sm-7"> 2</div>
-                  <div class="clearfix"></div>
-                <div class="bot-border"></div>
 
                 <div class="col-sm-5 col-xs-6 tital " >Email:</div><div class="col-sm-7" id="useremail"> usermail</div>
                 <div class="clearfix"></div>
               <div class="bot-border"></div>
                 
-                <div class="col-sm-5 col-xs-6 tital " >Date Of Joining:</div><div class="col-sm-7">11 Jun 2019</div>
+                <div class="col-sm-5 col-xs-6 tital " >Date Of Joining:</div><div class="col-sm-7" id="userjoined"> date </div>
                 
                   <div class="clearfix"></div>
                 <div class="bot-border"></div>
@@ -121,11 +96,11 @@
                     </div>
                 </div>  
                     <script>
-                    $(function() {
-                        $('#profile-image1').on('click', function() {
-                            $('#profile-image-upload').click();
-                        });
-                    });       
+                    // $(function() {
+                    //     $('#profile-image1').on('click', function() {
+                    //         $('#profile-image-upload').click();
+                    //     });
+                    // });       
                     </script> 
                    </div>
                 </div>
@@ -156,6 +131,80 @@
             <script src="assets/js/breakpoints.min.js"></script>
             <script src="assets/js/util.js"></script>
             <script src="assets/js/main.js"></script>
+            <script>
+            // S3 config
+            const albumBucketName = "com.mymentormenteeimage";
+
+            const s3bucket = new AWS.S3({
+                accessKeyId: env.accessKeyId,
+                secretAccessKey: env.secretAccessKey,
+                region: "ap-northeast-2",
+                Bucket: albumBucketName
+            });
+
+            // dynamoDB config
+            AWS.config.update({
+                region: "ap-northeast-2",
+                endpoint: 'dynamodb.ap-northeast-2.amazonaws.com',
+                accessKeyId: env.accessKeyId,
+                secretAccessKey: env.secretAccessKey,
+            });
+
+            function uploadImage(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+                    var file = input.files[0];
+                    var userName = document.getElementById('username').innerHTML;
+                    var photoFormat = (input.files[0].type).split('/')[1];
+                    var photoKey = userName + "." +photoFormat;
+
+                    s3bucket.upload({
+                        Key: photoKey,
+                        Body: file,
+                        Bucket: albumBucketName
+                    }, function(err, data) {
+                        if (err) {
+                        return alert('There was an error uploading your photo: ', err.message);
+                        }
+                        alert('Successfully uploaded photo.');
+                    });
+
+                    var docClient = new AWS.DynamoDB.DocumentClient();
+
+                    var accessToken = JSON.parse(sessionStorage['accessToken']);
+                    var userid = accessToken.payload['cognito:username'];
+
+                    var params = {
+                        TableName :"MyMentorDB",
+                        Key: {
+                            "Username": userid
+                        },
+                        UpdateExpression: "SET ProfileImage = :pi, ProfileImageURL=:piu",
+                        ExpressionAttributeValues:{
+                            ":pi": true,
+                            ":piu": "https://s3.ap-northeast-2.amazonaws.com/com.mymentormenteeimage/" + photoKey
+                        },
+                        ReturnValues:"UPDATED_NEW"
+                    };
+
+                    docClient.update(params, function(err, data) {
+                        if (err) {
+                            console.error("Unable to update item. Error JSON:", JSON.stringify(err, null, 2));
+                        } else {
+                            console.log("UpdateItem succeeded:", JSON.stringify(data, null, 2));
+                        }
+                    });
+
+                    reader.onload = function (e) {
+                        $('#profile-image1')
+                            .attr('src', e.target.result);
+                    };
+                    
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+
+            </script>
 
 </body>
 </html>

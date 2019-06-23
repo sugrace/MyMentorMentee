@@ -1,12 +1,3 @@
-AWS.config.update({
-    region: "ap-northeast-2",
-    endpoint: 'dynamodb.ap-northeast-2.amazonaws.com',
-    accessKeyId: "AKIA4NDWRPCLZQ7TIRHQ",
-    secretAccessKey: "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"
-});
-
-var docClient = new AWS.DynamoDB.DocumentClient();
-
 // 권한없이 url을 통한 우회 접속 시 차단
 function checkSignIn() {
     if(!sessionStorage['accessToken']) {
@@ -19,6 +10,8 @@ function checkSignIn() {
 }
 
 function getUserData() {
+    var docClient = new AWS.DynamoDB.DocumentClient();
+
     var accessToken = JSON.parse(sessionStorage['accessToken']);
     var userid = accessToken.payload['cognito:username'];
 
@@ -33,10 +26,22 @@ function getUserData() {
             console.log('something bad happened!!!');
         } else {
             // console.log(data);
+            // check if user profile image is already uploaded and set profile image
+            if(data.Item.ProfileImage == false) {
+                document.getElementById('profile-image1').src = "https://s3.ap-northeast-2.amazonaws.com/com.mymentormenteeimage/default.jpg";
+            } else {
+                document.getElementById('profile-image1').src = data.Item.ProfileImageURL;
+            }
+
             document.getElementById('username').innerHTML = data.Item.Username;
             document.getElementById('useryear').innerHTML = data.Item.Year + ' student';
             document.getElementById('useremail').innerHTML = data.Item.Email;
-            document.getElementById('usergrade').innerHTML = data.Item.grade;
+            document.getElementById('userjoined').innerHTML = data.Item.Joined;
+            if(data.Item.grade === undefined) {
+                document.getElementById('usergrade').innerHTML = 0;
+            } else {
+                document.getElementById('usergrade').innerHTML = data.Item.grade;
+            }
         }
     });
 }
