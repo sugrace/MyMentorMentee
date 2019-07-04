@@ -19,18 +19,22 @@ let inboundStream = null;
 let stream_cnt=0;
 let video;
 let myname = '';
-let mymasterName ;
 const masterName_title = document.getElementById('username');
 const masterName_val = document.getElementById('masterName');
 let accessToken_master;
 let currentFilter;
 var peerConnectionConfig = {
-    'iceServers': [
+    iceServers: [
         {
-            urls: [ "stun:tk-turn2.xirsys.com" ]
-         }, {
-            username: "2tKF9D-GB6o0Hp8B1XDTynmsw39taJ3b-dcEqz4afmOii4cYxWu7C6rMzCSj7Mb4AAAAAF0ODuNldmVl",
-            credential: "ae1ce7ac-94df-11e9-93d4-066b071c7196",
+            urls:[  'stun:stun.l.google.com:19302',
+                    'stun:stun1.l.google.com:19302',
+                    'stun:stun2.l.google.com:19302',
+                    'stun:stun3.l.google.com:19302',
+                    'stun:stun4.l.google.com:19302',
+                ]},
+        {
+            username: "OGmlXxCtBqZKUGLhrYvfxXzClBN6JXfd4-kSvJgZS4-FXXintrYQ1zFfnABLJPmqAAAAAF0WjIJwYW55YQ==",
+            credential: "4270d6b6-99ef-11e9-a3ad-066b071c7196",
             urls: [
                 "turn:tk-turn2.xirsys.com:80?transport=udp",
                 "turn:tk-turn2.xirsys.com:3478?transport=udp",
@@ -39,14 +43,13 @@ var peerConnectionConfig = {
                 "turns:tk-turn2.xirsys.com:443?transport=tcp",
                 "turns:tk-turn2.xirsys.com:5349?transport=tcp"
             ]
-         }
-    ]
+        }]
 };
 let localStream;
 let token;
 let call_token;
 
-//checkSignIn();
+
 
 if (document.location.hash === "" || document.location.hash === undefined) { 
     // create the unique token for this call 
@@ -215,39 +218,12 @@ side_chatting_bar.addEventListener ('click', event =>{
 });
 
 
-$('#evaluation_button').click(function () {
-    if(unlocked){
-        socket.emit('open-evaluate', { roomId: document.location.hash, myname });
-    }else{
-        alert('locked page can not request evaluation')
-    }
-});
-$('#submitEvaluate').click(function () {
-    var formData = $('#formEvaluate').serializeArray();
-    formData.push({name : "masterName" , value : mymasterName});
-    $.ajax({
-        url: 'https://15.164.19.240:5000/',
-        type: 'POST',
-        data: formData,
-        dataType: 'json',
-        success: function (data) {
-            alert('전송이 완료되었습니다.');
-            $('#exampleModalCenter').modal('hide');
-        },
-        error: function(xhr, status) {
-            alert('전송이 완료되었습니다.');
-            $('#exampleModalCenter').modal('hide');
-        }
-    })
- });
-
-
 
 
 // main async function 
 async function run(){
         if (!sessionStorage['accessToken']) {
-            alert('You are connected anonymously.')
+           // alert('You are connected anonymously.')
             //throw new Error('cognito accessToken is not defined!!! please Sign In');
         }
         localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
@@ -279,33 +255,10 @@ async function run(){
             // var parentDiv = video.parentElement;
             // video.parentElement.parentElement.removeChild(parentDiv);
         });
-        socket.on('open-evaluate', function (masterName) {
-            if(masterName != myname){
-                masterName_val.innerHTML = masterName + '님의 수업은...';
-                $('#exampleModalCenter').modal({
-                    backdrop: 'static',
-                    keyboard: false
-                });
-            }else{
-                alert('The request was successful.')
-            }
-        });
         socket.on('user-exceeded',function(){
             alert('user exceeded!')
         })
         socket.on('user-joined', function(id, client_socket_ids, masterName){
-            mymasterName = masterName
-            if(masterName == myname) {
-                document.getElementById('evaluation_button').hidden = false;
-                side_request_evaluation_button.hidden=false;
-            }else {
-                if(document.getElementById('evaluation_button')){
-                    document.getElementById('evaluation_button').remove();
-                }
-                if(side_request_evaluation_button){
-                    side_request_evaluation_button.remove();
-                }
-            }
             masterName_title.innerHTML = masterName + `'s session`;
             console.log(connections)
             console.log(id, client_socket_ids, masterName)
@@ -494,16 +447,6 @@ function SendData(data) {
             connections[connection_id].channel.send(JSON.stringify(data))
             }
         })
-    }
-}
-// 권한없이 url을 통한 우회 접속 시 차단
-function checkSignIn() {
-    if(!sessionStorage['accessToken']) {
-        alert('First, sign in to use the service!!!');
-        window.location.replace('index.html');
-        return;
-    } else {
-        //
     }
 }
 

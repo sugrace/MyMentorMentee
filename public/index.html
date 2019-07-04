@@ -2,7 +2,7 @@
 
 <html>
 	<head>
-		<title>My Mentor Mentee | Konkuk Univ.</title>
+		<title>My Mentor Mentee</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
@@ -97,7 +97,7 @@
 							This is a statistical result based on mentees' evaluation of the course.</p>
 						</header>
 						<p>
-						This month, 'Kim Ki-cheon' mentor in the field of network communication was selected as the best mentor. 
+						This month, 'evee' mentor in the field of network communication was selected as the best mentor. 
 						The mentor said, "It is a great honor to be the mentor of this month that students have chosen." 
 						Mentor's lecture list can be confirmed by clicking the button below.</p>
 						<ul class="actions">
@@ -116,9 +116,11 @@
 							<p>
 							Check out the latest updated employment news. </p>
 						</header>
-						<p>yeogidaga mojip company gonggo link gulgi OR chi up cafe list </p>
+						<p>We provide information on employment, entrepreneurship, on-the-job training, and career paths. </p>
+						<p> Go to school homepage link.</p>
 						<ul class="actions">
-							<li><a href="#" class="button">See More</a></li>
+							<li><a href="http://www.konkuk.ac.kr/jsp/Plaza/plaza_01_01.jsp" class="button">See More</a></li>
+						</ul>
 						</ul>
 					</div>
 					<a href="#four" class="goto-next scrolly">Next</a>
@@ -191,7 +193,7 @@
 						<li><a href="#" class="icon alt fa-envelope"><span class="label">Email</span></a></li>
 					</ul>
 					<ul class="copyright">
-						<li>&copy; Untitled. All rights reserved.</li><li>Konkuk univ. Computer Science. team TEMP.</a></li>
+						<li>&copy; Untitled. All rights reserved.</li><li>if you have any questions, please contact pre_a@naver.com</a></li>
 					</ul>
 				</footer>
 
@@ -204,9 +206,7 @@
 
 				// username을 이 함수로 전달하거나, Room.html 내에서 sessionStorage를 통해 username을 획득해도 된다.
 				function createRoom() {
-					if(!sessionStorage['accessToken']) {
-						alert(`First, sign in to use the service! Otherwise, you will be anonymous and will not be able to request an evaluation.`);
-					} else {
+					if(sessionStorage['accessToken']) {
 						let accessToken = JSON.parse(sessionStorage['accessToken']);
 						let username = accessToken.payload['cognito:username'];
 						alert(`Hi ${username} !! welcome mmm`);
@@ -216,13 +216,12 @@
 				}
 
 				function joinRoom(roomNumber) {
-					if(!sessionStorage['accessToken']) {
-						alert(`First, sign in to use the service! Otherwise, you will be anonymous and will not be able to request an evaluation.`);
-						document.location.assign(`Room.html#${roomNumber}`);
-					} else {
+					if(sessionStorage['accessToken']) {
 						var accessToken = JSON.parse(sessionStorage['accessToken']);
-						document.location.assign(`Room.html#${roomNumber}`);
+						let username = accessToken.payload['cognito:username'];
+						alert(`Hi ${username} !! welcome mmm`);
 					}
+						document.location.assign(`Room.html#${roomNumber}`);
 				}
 
 		if(!sessionStorage['accessToken']) {
