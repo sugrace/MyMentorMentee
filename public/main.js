@@ -20,7 +20,6 @@ let video;
 let myname = '';
 const masterName_title = document.getElementById('username');
 const masterName_val = document.getElementById('masterName');
-let accessToken_master;
 let currentFilter;
 var peerConnectionConfig = {
     iceServers: [
@@ -255,7 +254,8 @@ async function run(){
             // video.parentElement.parentElement.removeChild(parentDiv);
         });
         socket.on('user-exceeded',function(){
-            alert('user exceeded!')
+            alert('user exceeded!');
+            window.location.replace("index.html");
         })
         socket.on('user-joined', function(id, client_socket_ids, masterName){
             masterName_title.innerHTML = masterName + `'s session`;

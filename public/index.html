@@ -211,7 +211,7 @@
 						let username = accessToken.payload['cognito:username'];
 						alert(`Hi ${username} !! welcome mmm`);
 					}
-					document.location.assign('Room.html');
+					window.location.assign('Room.html');
 				
 				}
 
@@ -221,7 +221,7 @@
 						let username = accessToken.payload['cognito:username'];
 						alert(`Hi ${username} !! welcome mmm`);
 					}
-						document.location.assign(`Room.html#${roomNumber}`);
+					window.location.assign(`Room.html#${roomNumber}`);
 				}
 
 		if(!sessionStorage['accessToken']) {
