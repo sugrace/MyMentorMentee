@@ -31,18 +31,14 @@ var peerConnectionConfig = {
                     'stun:stun3.l.google.com:19302',
                     'stun:stun4.l.google.com:19302',
                 ]},
-        {
-            username: "OGmlXxCtBqZKUGLhrYvfxXzClBN6JXfd4-kSvJgZS4-FXXintrYQ1zFfnABLJPmqAAAAAF0WjIJwYW55YQ==",
-            credential: "4270d6b6-99ef-11e9-a3ad-066b071c7196",
-            urls: [
-                "turn:tk-turn2.xirsys.com:80?transport=udp",
-                "turn:tk-turn2.xirsys.com:3478?transport=udp",
-                "turn:tk-turn2.xirsys.com:80?transport=tcp",
-                "turn:tk-turn2.xirsys.com:3478?transport=tcp",
-                "turns:tk-turn2.xirsys.com:443?transport=tcp",
-                "turns:tk-turn2.xirsys.com:5349?transport=tcp"
+                {
+                    username: "ray",
+                    credential: "ray",
+                    urls: [
+                        "turn:52.79.236.209:3478",
+                    ]
+                 }
             ]
-        }]
 };
 let localStream;
 let token;

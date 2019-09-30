@@ -31,15 +31,10 @@ var peerConnectionConfig = {
                     'stun:stun4.l.google.com:19302',
                 ]},
                 {
-                    username: "9SGbAp-qOEePWOL7UbFZTuuF_aRgH-h6x4TaFdT8MdTi_HSD54w79wM--rkhwnxAAAAAAF0WilZldmVl",
-                    credential: "f762b15e-99ed-11e9-82a9-066b071c7196",
+                    username: "ray",
+                    credential: "ray",
                     urls: [
-                        "turn:tk-turn2.xirsys.com:80?transport=udp",
-                        "turn:tk-turn2.xirsys.com:3478?transport=udp",
-                        "turn:tk-turn2.xirsys.com:80?transport=tcp",
-                        "turn:tk-turn2.xirsys.com:3478?transport=tcp",
-                        "turns:tk-turn2.xirsys.com:443?transport=tcp",
-                        "turns:tk-turn2.xirsys.com:5349?transport=tcp"
+                        "turn:52.79.236.209:3478",
                     ]
                  }
             ]
