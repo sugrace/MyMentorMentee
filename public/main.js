@@ -39,10 +39,11 @@ var peerConnectionConfig = {
                  }
             ]
 };
-let localStream;
+let localVideoStream;
+let localScreenStream;
 let token;
 let call_token;
-
+let currentLocalStream;
 
 
 if (document.location.hash === "" || document.location.hash === undefined) { 
@@ -111,37 +112,48 @@ screenshare_button.addEventListener('click', event =>{
         audio: true,
     };
     if(screenshare_button.innerHTML == '화면공유'){
-        navigator.mediaDevices.getDisplayMedia(constraints).then(screenstream =>{
+        navigator.mediaDevices.getDisplayMedia(constraints).then(screenStream =>{
             screenshare_button.innerHTML='화면공유중단'
             side_screen_share_button.innerHTML='화면공유중단'
-
-                 localVideo.srcObject=screenstream;
+                 
+                 let videoTrack = localVideoStream.getVideoTracks()[0];   
+                 videoTrack.enabled = false;
+                 localScreenStream = screenStream;
+                 currentLocalStream = screenStream;
+                 localVideo.srcObject = screenStream;
                  localVideo.play();
-                 let screenTrack = screenstream.getVideoTracks()[0];
+                 let screenTrack = screenStream.getVideoTracks()[0];
                  Object.keys(connections).forEach(function(connection) {
                     var sender = connections[connection].getSenders().find(function(s) {
-                      return s.track.kind == screenTrack.kind;
+                        if(s.track.kind == screenTrack.kind){
+                            s.track.enabled = false;
+                            return true;
+                        }
                     });
-                    //console.log('found sender:', sender);
+                    console.log('found sender:', sender);
                     sender.replaceTrack(screenTrack);
                   });
             })
     }else if(screenshare_button.innerHTML == '화면공유중단'){
-        navigator.mediaDevices.getUserMedia(constraints).then(videostream =>{
             screenshare_button.innerHTML='화면공유'
             side_screen_share_button.innerHTML='화면공유'
-
-                 localVideo.srcObject=videostream;
+                 localVideo.srcObject=localVideoStream;
+                 currentLocalStream = localVideoStream;
                  localVideo.play();
-                 let videoTrack = videostream.getVideoTracks()[0];
+                 let videoTrack = localVideoStream.getVideoTracks()[0];
+                 let streamVideoTrack = localScreenStream.getVideoTracks()[0];
+                 videoTrack.enabled = true;
+                 streamVideoTrack.stop();
                  Object.keys(connections).forEach(function(connection) {
                     var sender = connections[connection].getSenders().find(function(s) {
-                      return s.track.kind == videoTrack.kind;
+                        if(s.track.kind == videoTrack.kind){
+                            s.track.enabled = false;
+                            return true;
+                        }
                     });
                     //console.log('found sender:', sender);
                     sender.replaceTrack(videoTrack);
                   });
-            })
     }
 })
 lock_button.addEventListener('click', event =>{
@@ -220,8 +232,9 @@ async function run(){
            // alert('You are connected anonymously.')
             //throw new Error('cognito accessToken is not defined!!! please Sign In');
         }
-        localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        localVideo.srcObject = localStream;
+        localVideoStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        localVideo.srcObject = localVideoStream;
+        currentLocalStream = localVideoStream;
         localVideo.play();
         socket = io()
         socket.on('connect', function(){
@@ -324,8 +337,8 @@ async function run(){
                             gotRemoteStream(event, client_socket_id)
                         }    
                    
-                        localStream.getTracks().forEach(function(track) {
-                        connections[client_socket_id].addTrack(track, localStream);
+                        currentLocalStream.getTracks().forEach(function(track) {
+                        connections[client_socket_id].addTrack(track, currentLocalStream);
                       });
                       
                 }
