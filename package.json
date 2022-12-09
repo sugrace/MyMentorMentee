@@ -9,7 +9,7 @@
   },
   "author": "evee",
   "dependencies": {
-    "express": "^4.16.4",
+    "express": "^4.17.3",
     "https": "^1.0.0",
     "lodash": "^4.17.11",
     "simple-peer": "^9.2.1",
